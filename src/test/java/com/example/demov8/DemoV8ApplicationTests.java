@@ -9,5 +9,4 @@ class DemoV8ApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }
