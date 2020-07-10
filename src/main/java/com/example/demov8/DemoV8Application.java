@@ -19,7 +19,7 @@ public class DemoV8Application implements CommandLineRunner {
 
 		Context context = Context.create();
 		Value result = context.eval("js", "40+2");
-		assert result.asInt() == 4;
+		assert result.asInt() == 42;
 
 		System.out.println(result);
 
