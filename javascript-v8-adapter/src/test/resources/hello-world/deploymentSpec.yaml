@@ -3,3 +3,5 @@ endpoints:
     artifact: 'src/welcome.js'
     adapter: 'JAVASCRIPT'
     function: 'hello'
+artifact: src/welcome.js
+function: 'hello'

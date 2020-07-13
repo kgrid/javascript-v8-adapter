@@ -28,7 +28,7 @@ public class JsV8IntegrationTest {
     adapter.initialize(activationContext);
     YAMLMapper yamlMapper = new YAMLMapper();
     ClassPathResource classPathResource = new ClassPathResource("hello-world/deploymentSpec.yaml");
-    JsonNode jsonNode = yamlMapper.readTree(classPathResource.getInputStream().readAllBytes());
+    deploymentSpec = (ObjectNode) yamlMapper.readTree(classPathResource.getInputStream().readAllBytes());
   }
 
   @Test
