@@ -19,7 +19,7 @@ public class JsV8Adapter implements Adapter {
 
   @Override
   public String getType() {
-    return null;
+    return "JAVASCRIPT";
   }
 
   @Override

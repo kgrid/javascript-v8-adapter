@@ -58,25 +58,6 @@ public class V8BaseTest {
   }
 
   @Test
-  public void globalRef() throws IOException {
-
-    Context context = Context.newBuilder().allowHostAccess(HostAccess.ALL).build();
-    Context context2 = Context.newBuilder().allowHostAccess(HostAccess.ALL).build();
-    String addGlobal = "function setVar() { var a = 2; }";
-    String jsCode = "function doStuff(p1, p2) { console.log(a); }";
-
-    Source sourceCode = Source.newBuilder("js", jsCode, "jsCode.js").build();
-    Source sourceCode2 = Source.newBuilder("js", addGlobal, "global.js").build();
-
-    context2.eval(sourceCode2);
-    context.eval(sourceCode);
-    Value function = context.getBindings("js").getMember("doStuff");
-    Value function2 = context2.getBindings("js").getMember("setVar");
-    function2.execute();
-    Value result = function.execute(2, 5);
-  }
-
-  @Test
   public void polyglotBindingTest() throws IOException {
     Engine engine = Engine.create();
     Map<String, Integer> activationContext = new HashMap<>();

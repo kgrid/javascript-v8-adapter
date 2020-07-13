@@ -145,4 +145,9 @@ public class JsV8AdapterTest {
       assertEquals("Function goodbye1 not found", ex.getCause().getMessage());
     }
   }
+
+  @Test
+  public void getTypeReturnsJavascript(){
+    assertEquals("JAVASCRIPT", adapter.getType());
+  }
 }
