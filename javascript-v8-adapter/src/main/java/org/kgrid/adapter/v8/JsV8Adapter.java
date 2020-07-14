@@ -1,10 +1,8 @@
 package org.kgrid.adapter.v8;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.Engine;
-import org.graalvm.polyglot.HostAccess;
-import org.graalvm.polyglot.Value;
+import org.graalvm.polyglot.*;
+import org.graalvm.polyglot.proxy.ProxyObject;
 import org.kgrid.adapter.api.ActivationContext;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
@@ -12,6 +10,7 @@ import org.kgrid.adapter.api.Executor;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 public class JsV8Adapter implements Adapter {
 
@@ -41,7 +40,13 @@ public class JsV8Adapter implements Adapter {
       String objectLocation, String arkId, String endpointName, JsonNode deploymentSpec) {
 
     // Might need to wrap in try with resources to have context close on failure
-    Context context = Context.newBuilder("js").allowHostAccess(HostAccess.ALL).build();
+    Context context =
+        Context.newBuilder("js")
+            .allowHostAccess(HostAccess.ALL)
+            .allowExperimentalOptions(true)
+            .option("js.experimental-foreign-object-prototype", "true")
+            .allowNativeAccess(true)
+            .build();
     Value function;
 
     String artifact = deploymentSpec.get("artifact").asText();
@@ -63,9 +68,32 @@ public class JsV8Adapter implements Adapter {
     return new Executor() {
       @Override
       public Object execute(Object o) {
-        return function.execute(o).as(Object.class);
+        try {
+          Object input = replaceMaps(o);
+          Value result = function.execute(input);
+          return result.as(Object.class);
+        } catch (PolyglotException e) {
+          throw new AdapterException("Code execution error", e);
+        }
       }
     };
+  }
+
+  public Object replaceMaps(Object o) {
+    if (o instanceof Map) {
+      ((Map) o)
+          .forEach(
+              (key, value) -> {
+                if (value instanceof Map) {
+                  ((Map) o).put(key, replaceMaps(value));
+                }
+              });
+      return ProxyObject.fromMap((Map) o);
+    }
+    // TODO: Add array handling
+    else {
+      return o;
+    }
   }
 
   @Override

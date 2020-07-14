@@ -23,7 +23,7 @@ public class JsV8IntegrationTest {
   TestActivationContext activationContext;
 
   @Before
-  public void setUp() throws IOException {
+  public void setUp() {
     activationContext = new TestActivationContext();
     adapter = new JsV8Adapter();
     adapter.initialize(activationContext);
