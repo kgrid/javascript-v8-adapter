@@ -3,6 +3,7 @@ package org.kgrid.adapter.v8;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
+import org.graalvm.polyglot.HostAccess;
 import org.graalvm.polyglot.Value;
 import org.kgrid.adapter.api.ActivationContext;
 import org.kgrid.adapter.api.Adapter;
@@ -40,7 +41,7 @@ public class JsV8Adapter implements Adapter {
       String objectLocation, String arkId, String endpointName, JsonNode deploymentSpec) {
 
     // Might need to wrap in try with resources to have context close on failure
-    Context context = Context.newBuilder().build();
+    Context context = Context.newBuilder("js").allowHostAccess(HostAccess.ALL).build();
     Value function;
 
     String artifact = deploymentSpec.get("artifact").asText();
@@ -48,6 +49,7 @@ public class JsV8Adapter implements Adapter {
 
     try {
       byte[] src = activationContext.getBinary(artifactLocation);
+      context.getBindings("js").putMember("context", activationContext);
       context.eval("js", new String(src));
       String functionName = deploymentSpec.get("function").asText();
       function = context.getBindings("js").getMember(functionName);

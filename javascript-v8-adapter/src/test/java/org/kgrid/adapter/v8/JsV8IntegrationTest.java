@@ -2,12 +2,14 @@ package org.kgrid.adapter.v8;
 
 import static org.junit.Assert.assertEquals;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.graalvm.polyglot.HostAccess;
 import org.junit.Before;
 import org.junit.Test;
 import org.kgrid.adapter.api.ActivationContext;
@@ -18,47 +20,55 @@ import org.springframework.core.io.ClassPathResource;
 public class JsV8IntegrationTest {
 
   Adapter adapter;
-  ObjectNode deploymentSpec;
-  ActivationContext activationContext;
+  TestActivationContext activationContext;
 
   @Before
   public void setUp() throws IOException {
-    activationContext = new testActivationContext();
+    activationContext = new TestActivationContext();
     adapter = new JsV8Adapter();
     adapter.initialize(activationContext);
-    YAMLMapper yamlMapper = new YAMLMapper();
-    ClassPathResource classPathResource = new ClassPathResource("hello-world/deploymentSpec.yaml");
-    deploymentSpec = (ObjectNode) yamlMapper.readTree(classPathResource.getInputStream().readAllBytes());
   }
 
   @Test
-  public void testActivatesObjectAndGetsExecutor() throws JsonProcessingException {
-    Executor executor = adapter.activate("hello-world", "", "", deploymentSpec);
+  public void testActivatesObjectAndGetsExecutor() throws IOException {
+    JsonNode deploymentSpec = getDeploymentSpec("hello-world/deploymentSpec.yaml");
+    JsonNode endpointObject = deploymentSpec.get("endpoints").get("/welcome");
+    Executor executor = adapter.activate("hello-world", "", "", endpointObject);
     Object helloResult = executor.execute("Bob");
     String result = new ObjectMapper().writeValueAsString(helloResult);
     assertEquals("\"Hello, Bob\"", result);
   }
 
   @Test
-  public void testLoadsDeploymentSpec() {
-    Executor executor = adapter.activate("hello-world", "", "", deploymentSpec);
-
+  public void testCanCallOtherExecutor() throws IOException {
+    JsonNode deploymentSpec = getDeploymentSpec("hello-world/deploymentSpec.yaml");
+    JsonNode endpointObject = deploymentSpec.get("endpoints").get("/welcome");
+    Executor helloExecutor = adapter.activate("hello-world", "", "", endpointObject);
+    activationContext.addExecutor("hello-world/welcome", helloExecutor);
+    deploymentSpec = getDeploymentSpec("hello-exec/deploymentSpec.yaml");
+    endpointObject = deploymentSpec.get("endpoints").get("/welcome");
+    Executor executor = adapter.activate("hello-exec", "", "", endpointObject);
+    Object helloResult = executor.execute("Bob");
+    String result = new ObjectMapper().writeValueAsString(helloResult);
+    assertEquals("\"Hello, Bob\"", result);
   }
 
-  @Test
-  public void yamlLoad() throws IOException {
-    YAMLMapper ymapper = new YAMLMapper();
-    JsonNode ynode = ymapper.readTree("boo: yah".getBytes());
-
-    assertEquals("yah",ynode.get("boo").asText());
+  private JsonNode getDeploymentSpec(String deploymentLocation) throws IOException {
+    YAMLMapper yamlMapper = new YAMLMapper();
+    ClassPathResource classPathResource = new ClassPathResource(deploymentLocation);
+    JsonNode deploymentSpec =
+        yamlMapper.readTree(classPathResource.getInputStream().readAllBytes());
+    return deploymentSpec;
   }
 }
 
-class testActivationContext implements ActivationContext {
+class TestActivationContext implements ActivationContext {
+
+  Map<String, Executor> executorMap = new HashMap<>();
 
   @Override
   public Executor getExecutor(String s) {
-    return null;
+    return executorMap.get(s);
   }
 
   @Override
@@ -74,4 +84,9 @@ class testActivationContext implements ActivationContext {
   public String getProperty(String s) {
     return null;
   }
+
+  public void addExecutor(String id, Executor executor){
+    executorMap.put(id, executor);
+  }
 }
+
