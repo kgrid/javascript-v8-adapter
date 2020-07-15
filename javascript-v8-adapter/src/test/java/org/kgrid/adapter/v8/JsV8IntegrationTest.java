@@ -34,9 +34,8 @@ public class JsV8IntegrationTest {
     JsonNode deploymentSpec = getDeploymentSpec("hello-world/deploymentSpec.yaml");
     JsonNode endpointObject = deploymentSpec.get("endpoints").get("/welcome");
     Executor executor = adapter.activate("hello-world", "", "", endpointObject);
-    Object helloResult = executor.execute("Bob");
-    String result = new ObjectMapper().writeValueAsString(helloResult);
-    assertEquals("\"Hello, Bob\"", result);
+    Object helloResult = executor.execute("\"Bob\"");
+    assertEquals("Hello, Bob", helloResult);
   }
 
   @Test
@@ -48,9 +47,8 @@ public class JsV8IntegrationTest {
     deploymentSpec = getDeploymentSpec("hello-exec/deploymentSpec.yaml");
     endpointObject = deploymentSpec.get("endpoints").get("/welcome");
     Executor executor = adapter.activate("hello-exec", "", "", endpointObject);
-    Object helloResult = executor.execute("Bob");
-    String result = new ObjectMapper().writeValueAsString(helloResult);
-    assertEquals("\"Hello, Bob\"", result);
+    Object helloResult = executor.execute("\"Bob\"");
+    assertEquals("Hello, Bob", helloResult);
   }
 
   private JsonNode getDeploymentSpec(String deploymentLocation) throws IOException {

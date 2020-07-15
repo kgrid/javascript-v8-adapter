@@ -45,6 +45,7 @@ public class JsV8Adapter implements Adapter {
             .allowHostAccess(HostAccess.ALL)
             .allowExperimentalOptions(true)
             .option("js.experimental-foreign-object-prototype", "true")
+            .allowHostClassLookup(className -> true)
             .allowNativeAccess(true)
             .build();
     Value function;
@@ -54,22 +55,33 @@ public class JsV8Adapter implements Adapter {
 
     try {
       byte[] src = activationContext.getBinary(artifactLocation);
-      context.getBindings("js").putMember("context", activationContext);
-      context.eval("js", new String(src));
       String functionName = deploymentSpec.get("function").asText();
-      function = context.getBindings("js").getMember(functionName);
-      if (function == null) {
-        throw new AdapterException("Function " + functionName + " not found");
-      }
+      context.getBindings("js").putMember("context", activationContext);
+      final String parseIO =
+          "function parseInAndOut(input) {"
+              + "let parsed;"
+              + "try {"
+              + "parsed = JSON.parse(input);"
+              + "} catch (error) {"
+              + "return "
+              + functionName
+              + "(input);"
+              + "}"
+              + "return "
+              + functionName
+              + "(parsed);"
+              + "}";
+      context.eval("js", parseIO);
+      context.eval("js", new String(src));
+      function = context.getBindings("js").getMember("parseInAndOut");
     } catch (Exception e) {
       throw new AdapterException("Error loading source", e);
     }
 
     return new Executor() {
       @Override
-      public Object execute(Object o) {
+      public Object execute(Object input) {
         try {
-          Object input = replaceMaps(o);
           Value result = function.execute(input);
           return result.as(Object.class);
         } catch (PolyglotException e) {
@@ -77,23 +89,6 @@ public class JsV8Adapter implements Adapter {
         }
       }
     };
-  }
-
-  public Object replaceMaps(Object o) {
-    if (o instanceof Map) {
-      ((Map) o)
-          .forEach(
-              (key, value) -> {
-                if (value instanceof Map) {
-                  ((Map) o).put(key, replaceMaps(value));
-                }
-              });
-      return ProxyObject.fromMap((Map) o);
-    }
-    // TODO: Add array handling
-    else {
-      return o;
-    }
   }
 
   @Override

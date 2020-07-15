@@ -69,23 +69,14 @@ public class JsV8AdapterTest {
   public void returnsValidHelloWorldExecutor() {
 
     Executor ex = adapter.activate("hello-world", "", "", deploymentSpec);
-    assertEquals("Hello, Steve", ex.execute("Steve").toString());
+    assertEquals("Hello, Steve", ex.execute("\"Steve\"").toString());
   }
 
   @Test
   public void returnsValidHelloWorldExecutorForBob() {
 
     Executor ex = adapter.activate("hello-world", "", "", deploymentSpec);
-    assertEquals("Hello, Bob", ex.execute("Bob").toString());
-  }
-
-  @Test
-  public void executorReturnsJsonSerializableResult() throws Exception {
-
-    Executor ex = adapter.activate("hello-world", "", "", deploymentSpec);
-    Object helloResult = ex.execute("Bob");
-    String result = new ObjectMapper().writeValueAsString(helloResult);
-    assertEquals("\"Hello, Bob\"", result);
+    assertEquals("Hello, Bob", ex.execute("\"Bob\"").toString());
   }
 
   @Test
@@ -94,9 +85,8 @@ public class JsV8AdapterTest {
     when(activationContext.getBinary(anyString()))
         .thenReturn("function goodbye(name){ return 'Goodbye, ' + name;}".getBytes());
     Executor ex = adapter.activate("hello-world", "", "", deploymentSpec);
-    Object helloResult = ex.execute("Bob");
-    String result = new ObjectMapper().writeValueAsString(helloResult);
-    assertEquals("\"Goodbye, Bob\"", result);
+    Object helloResult = ex.execute("\"Bob\"");
+    assertEquals("Goodbye, Bob", helloResult);
   }
 
   @Test
@@ -109,7 +99,7 @@ public class JsV8AdapterTest {
             "function fools(name){ return 'Fly you fools, especially you ' +name;}".getBytes());
 
     Executor ex = adapter.activate("hello-world", "", "", deploymentSpec);
-    Object result = ex.execute("Bob");
+    Object result = ex.execute("\"Bob\"");
     assertEquals("Fly you fools, especially you Bob", result.toString());
   }
 
