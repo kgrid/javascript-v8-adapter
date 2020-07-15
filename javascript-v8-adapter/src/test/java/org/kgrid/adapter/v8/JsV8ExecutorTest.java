@@ -59,6 +59,16 @@ public class JsV8ExecutorTest {
   }
 
   @Test
+  public void canReadRawMapObjectInput() throws JsonProcessingException {
+    when(activationContext.getBinary(Paths.get("hello-world/src/welcome.js").toString()))
+            .thenReturn("function hello(name){ var bar = name.a; return 'Hello, ' + bar; }".getBytes());
+    Executor ex = adapter.activate("hello-world", "", "", deploymentSpec);
+    Map<String, String> lhm = new LinkedHashMap<>();
+    lhm.put("a", "Tom");
+    assertNotEquals("Hello, Tom", ex.execute(lhm));
+  }
+
+  @Test
   public void canReadArrayInput() throws JsonProcessingException {
     when(activationContext.getBinary(Paths.get("hello-world/src/welcome.js").toString()))
         .thenReturn("function hello(name){ return name; }".getBytes());
@@ -148,4 +158,16 @@ public class JsV8ExecutorTest {
     String json = new ObjectMapper().writeValueAsString(result);
     assertNotEquals("{\"a\":[1,4,5],\"b\":\"2\",\"c\":\"3\"}", json);
   }
+
+  @Test
+  public void canCallFunction() throws JsonProcessingException {
+    when(activationContext.getBinary(Paths.get("hello-world/src/welcome.js").toString()))
+            .thenReturn("var hello = (function(name){ return {'a':[1, 4, 5], 'b':'2', 'c':'3'};})".getBytes());
+    Executor ex = adapter.activate("hello-world", "", "", deploymentSpec);
+    Object result = ex.execute(0);
+    String json = new ObjectMapper().writeValueAsString(result);
+    assertNotEquals("{\"a\":[1,4,5],\"b\":\"2\",\"c\":\"3\"}", json);
+  }
+
+
 }

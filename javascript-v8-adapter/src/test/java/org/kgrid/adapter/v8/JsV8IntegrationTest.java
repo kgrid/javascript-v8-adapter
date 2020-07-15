@@ -1,11 +1,13 @@
 package org.kgrid.adapter.v8;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,6 +53,19 @@ public class JsV8IntegrationTest {
     assertEquals("Hello, Bob", helloResult);
   }
 
+//  @Test
+  public void canCallBundledExec() throws IOException {
+    JsonNode deploymentSpec = getDeploymentSpec("exec-step-v1.0.0/deploymentSpec.yaml");
+    JsonNode endpointObject = deploymentSpec.get("endpoints").get("/welcome");
+    Executor helloExecutor = adapter.activate("exec-step-v1.0.0", "", "", endpointObject);
+    activationContext.addExecutor("exec-step-v1.0.0/welcome", helloExecutor);
+    deploymentSpec = getDeploymentSpec("exec-example-v1.0.0/deploymentSpec.yaml");
+    endpointObject = deploymentSpec.get("endpoints").get("/welcome");
+    Executor executor = adapter.activate("exec-example-v1.0.0", "", "", endpointObject);
+    Object helloResult = executor.execute("\"Bob\"");
+    assertEquals("Hello, Bob", helloResult);
+  }
+
   private JsonNode getDeploymentSpec(String deploymentLocation) throws IOException {
     YAMLMapper yamlMapper = new YAMLMapper();
     ClassPathResource classPathResource = new ClassPathResource(deploymentLocation);
@@ -58,6 +73,7 @@ public class JsV8IntegrationTest {
         yamlMapper.readTree(classPathResource.getInputStream().readAllBytes());
     return deploymentSpec;
   }
+
 }
 
 class TestActivationContext implements ActivationContext {
