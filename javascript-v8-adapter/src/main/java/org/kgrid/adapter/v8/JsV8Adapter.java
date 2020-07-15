@@ -2,7 +2,6 @@ package org.kgrid.adapter.v8;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.graalvm.polyglot.*;
-import org.graalvm.polyglot.proxy.ProxyObject;
 import org.kgrid.adapter.api.ActivationContext;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
@@ -10,7 +9,6 @@ import org.kgrid.adapter.api.Executor;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
 
 public class JsV8Adapter implements Adapter {
 
@@ -74,6 +72,7 @@ public class JsV8Adapter implements Adapter {
       context.eval("js", parseIO);
       context.eval("js", new String(src));
       function = context.getBindings("js").getMember("parseInAndOut");
+//      function = context.getBindings("js").getMember(functionName);
     } catch (Exception e) {
       throw new AdapterException("Error loading source", e);
     }

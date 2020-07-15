@@ -1,1 +1,1 @@
-function hello(name){return 'Hello, '+name}
+function hello(inputs){return 'Hello, '+inputs.name}

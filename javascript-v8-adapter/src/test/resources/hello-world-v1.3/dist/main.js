@@ -87,33 +87,68 @@ var welcome =
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/hello.json":
+/*!************************!*\
+  !*** ./src/hello.json ***!
+  \************************/
+/*! exports provided: data, default */
+/***/ (function(module) {
+
+module.exports = JSON.parse("{\"data\":[{\"language\":\"Spanish\",\"speakers\":\"427 million\",\"hello\":\"Hola\"},{\"language\":\"English\",\"speakers\":\"339 million\",\"hello\":\"Hello\"},{\"language\":\"Portuguese\",\"speakers\":\"202 million\",\"hello\":\"Ola\"},{\"language\":\"German\",\"speakers\":\"77 million\",\"hello\":\"Hallo\"},{\"language\":\"French\",\"speakers\":\"76 million\",\"hello\":\"Bonjour\"},{\"language\":\"Turkish\",\"speakers\":\"71 million\",\"hello\":\"Merhaba\"},{\"language\":\"Italian\",\"speakers\":\"63 million\",\"hello\":\"Ciao\"}]}");
+
+/***/ }),
+
 /***/ "./src/index.js":
 /*!**********************!*\
   !*** ./src/index.js ***!
   \**********************/
 /*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
+
+var lib = __webpack_require__(/*! ./lib.js */ "./src/lib.js");
+
+var hello = __webpack_require__(/*! ./hello.json */ "./src/hello.json");
 
 function welcome(inputs) {
-  var name = inputs.name;
-  var iters = inputs.iterations || 0;
-  var result = 0;
-  globals.threadsafe = inputs.correlation;
+  var index = -1;
 
-  for (var i = 0; i < iters; i++) {
-    result += i;
+  for (var i = 0; i < hello.data.length; i++) {
+    var obj = hello.data[i];
+    var lang = inputs.language || "English";
+
+    if (obj.language.toLowerCase() == lang.toLowerCase()) {
+      index = i;
+      break;
+    }
   }
 
-  var output = {};
-  output.name = name;
-  output.iterations = iters;
-  output.result = result;
-  output.correlation = inputs.correlation;
-  output.threadsafe = globals.threadsafe;
-  return output;
+  var hi = 'The language is not found. \n Hello';
+
+  if (index != -1) {
+    hi = hello.data[index].hello;
+  }
+
+  globals.name = inputs.name;
+  return lib.sayHi(hi, globals.name);
 }
 
 var globals = {};
+module.exports = welcome;
+
+/***/ }),
+
+/***/ "./src/lib.js":
+/*!********************!*\
+  !*** ./src/lib.js ***!
+  \********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = {
+  sayHi: function sayHi(hi, name) {
+    return hi + ", " + name;
+  }
+};
 
 /***/ })
 

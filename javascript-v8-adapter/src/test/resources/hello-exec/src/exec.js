@@ -1,4 +1,6 @@
-function exec(name) {
+function exec(user) {
     let executor = context.getExecutor("hello-world/welcome");
-    return executor.execute(name);
+    let localUser = {name:"Bob"};
+//    let localUserString = JSON.stringify(localUser);
+    return executor.execute({...user});
 }

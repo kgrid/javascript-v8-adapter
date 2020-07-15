@@ -1,23 +1,19 @@
 package org.kgrid.adapter.v8;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
-
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.graalvm.polyglot.HostAccess;
 import org.junit.Before;
 import org.junit.Test;
 import org.kgrid.adapter.api.ActivationContext;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.Executor;
 import org.springframework.core.io.ClassPathResource;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 public class JsV8IntegrationTest {
 
@@ -36,7 +32,16 @@ public class JsV8IntegrationTest {
     JsonNode deploymentSpec = getDeploymentSpec("hello-world/deploymentSpec.yaml");
     JsonNode endpointObject = deploymentSpec.get("endpoints").get("/welcome");
     Executor executor = adapter.activate("hello-world", "", "", endpointObject);
-    Object helloResult = executor.execute("\"Bob\"");
+    Object helloResult = executor.execute("{\"name\":\"Bob\"}");
+    assertEquals("Hello, Bob", helloResult);
+  }
+
+  @Test
+  public void testActivatesBundledJSObjectAndGetsExecutor() throws IOException {
+    JsonNode deploymentSpec = getDeploymentSpec("hello-world-v1.3/deploymentSpec.yaml");
+    JsonNode endpointObject = deploymentSpec.get("endpoints").get("/welcome");
+    Executor executor = adapter.activate("hello-world-v1.3", "", "", endpointObject);
+    Object helloResult = executor.execute("{\"name\":\"Bob\"}");
     assertEquals("Hello, Bob", helloResult);
   }
 
@@ -49,20 +54,30 @@ public class JsV8IntegrationTest {
     deploymentSpec = getDeploymentSpec("hello-exec/deploymentSpec.yaml");
     endpointObject = deploymentSpec.get("endpoints").get("/welcome");
     Executor executor = adapter.activate("hello-exec", "", "", endpointObject);
-    Object helloResult = executor.execute("\"Bob\"");
+    Object helloResult = executor.execute("{\"name\":\"Bob\"}");
     assertEquals("Hello, Bob", helloResult);
   }
 
 //  @Test
   public void canCallBundledExec() throws IOException {
+    // Activate the child
     JsonNode deploymentSpec = getDeploymentSpec("exec-step-v1.0.0/deploymentSpec.yaml");
     JsonNode endpointObject = deploymentSpec.get("endpoints").get("/welcome");
-    Executor helloExecutor = adapter.activate("exec-step-v1.0.0", "", "", endpointObject);
-    activationContext.addExecutor("exec-step-v1.0.0/welcome", helloExecutor);
+    Executor childExecutor = adapter.activate("exec-step-v1.0.0", "", "", endpointObject);
+    activationContext.addExecutor("exec-step-v1.0.0/welcome", childExecutor);
+
+    // Activate the executive Obj
     deploymentSpec = getDeploymentSpec("exec-example-v1.0.0/deploymentSpec.yaml");
     endpointObject = deploymentSpec.get("endpoints").get("/welcome");
     Executor executor = adapter.activate("exec-example-v1.0.0", "", "", endpointObject);
-    Object helloResult = executor.execute("\"Bob\"");
+
+    Object helloResult =
+        executor.execute(
+            "{\n"
+                + "  \"name\": \"Test 21\",\n"
+                + "  \"iterations\": 2,\n"
+                + "  \"steps\": 2\n"
+                + "}");
     assertEquals("Hello, Bob", helloResult);
   }
 
