@@ -1,6 +1,7 @@
 package org.kgrid.adapter.v8;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.function.Function;
 import org.graalvm.polyglot.*;
 import org.kgrid.adapter.api.ActivationContext;
 import org.kgrid.adapter.api.Adapter;
@@ -52,27 +53,14 @@ public class JsV8Adapter implements Adapter {
     String artifactLocation = Paths.get(objectLocation, artifact).toString();
 
     try {
-      byte[] src = activationContext.getBinary(artifactLocation);
-      String functionName = deploymentSpec.get("function").asText();
       context.getBindings("js").putMember("context", activationContext);
-      final String parseIO =
-          "function parseInAndOut(input) {"
-              + "let parsed;"
-              + "try {"
-              + "parsed = JSON.parse(input);"
-              + "} catch (error) {"
-              + "return "
-              + functionName
-              + "(input);"
-              + "}"
-              + "return "
-              + functionName
-              + "(parsed);"
-              + "}";
-      context.eval("js", parseIO);
+
+      // Create the base function from our artifact(s)
+      byte[] src = activationContext.getBinary(artifactLocation);
       context.eval("js", new String(src));
-      function = context.getBindings("js").getMember("parseInAndOut");
-//      function = context.getBindings("js").getMember(functionName);
+      String functionName = deploymentSpec.get("function").asText();
+      function = context.getBindings("js").getMember(functionName);
+
     } catch (Exception e) {
       throw new AdapterException("Error loading source", e);
     }
@@ -81,13 +69,30 @@ public class JsV8Adapter implements Adapter {
       @Override
       public Object execute(Object input) {
         try {
-          Value result = function.execute(input);
+          Value result = getWrapper(context).execute(function,input);
           return result.as(Object.class);
         } catch (PolyglotException e) {
           throw new AdapterException("Code execution error", e);
         }
       }
     };
+  }
+
+  private Value getWrapper(Context context) {
+    Value wrapper;// Put a helper function in the Context
+    context.eval("js",
+        "function wrapper(baseFunction, arg) { "
+            + "/* console.log(baseFunction.name); */"
+            + "let parsedArg;"
+            + "try {"
+            + "   parsedArg = JSON.parse(arg);"
+            + "} catch (error) {"
+            + "   return baseFunction(arg);"
+            + "}"
+            + "return baseFunction(parsedArg);"
+            + "}");
+    wrapper = context.getBindings("js").getMember("wrapper");
+    return wrapper;
   }
 
   @Override
