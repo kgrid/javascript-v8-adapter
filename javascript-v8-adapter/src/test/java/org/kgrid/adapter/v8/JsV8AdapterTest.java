@@ -93,8 +93,8 @@ public class JsV8AdapterTest {
     }
 
     @Test
-    public void getTypeReturnsJavascript() {
-        assertEquals("JAVASCRIPT", adapter.getType());
+    public void getTypeReturnsV8() {
+        assertEquals("V8", adapter.getType());
     }
 
 }
