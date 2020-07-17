@@ -90,6 +90,38 @@ public class JsV8IntegrationTest {
     return deploymentSpec;
   }
 
+
+  @Test
+  public void testActivatesTestObjectAndGetsExecutor() throws IOException {
+    JsonNode deploymentSpec = getDeploymentSpec("v8-bmicalc-v1.0/deployment.yaml");
+    JsonNode endpointObject = deploymentSpec.get("endpoints").get("/bmicalc");
+    Executor executor = adapter.activate("v8-bmicalc-v1.0", "", "", endpointObject);
+    Object bmiResult = executor.execute("{\"weight\":70, \"height\":1.70}");
+    assertEquals("24.2", bmiResult);
+  }
+
+  @Test
+  public void testTestExecutiveObject() throws IOException {
+    JsonNode deploymentSpec = getDeploymentSpec("hello-world/deploymentSpec.yaml");
+    JsonNode endpointObject = deploymentSpec.get("endpoints").get("/welcome");
+    Executor helloExecutor = adapter.activate("hello-world", "", "", endpointObject);
+    activationContext.addExecutor("hello-world/welcome", helloExecutor);
+
+     deploymentSpec = getDeploymentSpec("v8-bmicalc-v1.0/deployment.yaml");
+     endpointObject = deploymentSpec.get("endpoints").get("/bmicalc");
+     helloExecutor = adapter.activate("v8-bmicalc-v1.0", "", "", endpointObject);
+    activationContext.addExecutor("v8-bmicalc-v1.0/bmicalc", helloExecutor);
+
+    deploymentSpec = getDeploymentSpec("v8-executive-1.0.0/deployment.yaml");
+    endpointObject = deploymentSpec.get("endpoints").get("/process");
+    Executor executor = adapter.activate("v8-executive-1.0.0", "", "", endpointObject);
+    Object helloResult = executor.execute("{\"name\":\"Bob\", \"weight\":70, \"height\":1.70}");
+    assertEquals("{message: \"Hello, Bob\", bmi: \"24.2\"}",
+            helloResult.toString()
+    );
+  }
+
+
 }
 
 class TestActivationContext implements ActivationContext {
