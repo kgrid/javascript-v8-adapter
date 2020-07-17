@@ -1,0 +1,5 @@
+endpoints:
+  /bmicalc:
+    artifact: 'bmi.js'
+    adapter: 'JAVASCRIPT'
+    function: 'bmicalc'

@@ -1,0 +1,5 @@
+endpoints:
+  /process:
+    artifact: 'src/index.js'
+    adapter: 'JAVASCRIPT'
+    function: 'process'

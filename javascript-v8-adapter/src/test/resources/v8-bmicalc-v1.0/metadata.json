@@ -1,0 +1,13 @@
+{
+  "@id": "v8-bmicalc",
+  "@type":"koio:KnowledgeObject",
+  "identifier": "ark:/v8/bmicalc",
+  "version":"v2.0",
+  "title": "Implementation of BMI Calculator to be activated in the remote NodeJS runtime",
+  "description":"Calculates BMI",
+  "keywords":["GraalJS","bmi", "calculator"],
+  "hasServiceSpecification": "service.yaml",
+  "hasDeploymentSpecification": "deployment.yaml",
+  "hasPayload": "bmi.js",
+  "@context" : ["http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
+}
