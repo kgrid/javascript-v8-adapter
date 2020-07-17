@@ -26,32 +26,41 @@ public class JsV8ExampleKOTest {
 
     @Test
     public void testSampleSimpleObject() throws IOException {
-        JsonNode deploymentSpec = getDeploymentSpec("v8-bmicalc-v1.0/deployment.yaml");
-        JsonNode endpointObject = deploymentSpec.get("endpoints").get("/bmicalc");
-        Executor executor = adapter.activate("v8-bmicalc-v1.0", "", "", endpointObject);
+        String bmiKoPackageName = "v8-bmicalc-v1.0";
+        String bmiKoDeploymentSpecName = "deployment.yaml";
+        String bmiKoEndpointName = "/bmicalc";
+        Executor executor = getExecutor(bmiKoPackageName, bmiKoDeploymentSpecName, bmiKoEndpointName);
         Object bmiResult = executor.execute("{\"weight\":70, \"height\":1.70}");
         assertEquals("24.2", bmiResult);
     }
 
     @Test
     public void testSampleExecutiveObjectWithStringifiedInputObjects() throws IOException {
-        JsonNode deploymentSpec = getDeploymentSpec("hello-world/deploymentSpec.yaml");
-        JsonNode endpointObject = deploymentSpec.get("endpoints").get("/welcome");
-        Executor helloExecutor = adapter.activate("hello-world", "", "", endpointObject);
-        activationContext.addExecutor("hello-world/welcome", helloExecutor);
+        String helloKoPackageName = "hello-world";
+        String helloKoDeploymentSpecName = "deploymentSpec.yaml";
+        String helloKoEndpointName = "/welcome";
+        String bmiKoPackageName = "v8-bmicalc-v1.0";
+        String bmiKoDeploymentSpecName = "deployment.yaml";
+        String bmiKoEndpointName = "/bmicalc";
+        String executiveKoPackageName = "v8-executive-1.0.0";
+        String executiveKoDeploymentSpecName = "deployment.yaml";
+        String executiveKoEndpointName = "/process";
 
-        deploymentSpec = getDeploymentSpec("v8-bmicalc-v1.0/deployment.yaml");
-        endpointObject = deploymentSpec.get("endpoints").get("/bmicalc");
-        helloExecutor = adapter.activate("v8-bmicalc-v1.0", "", "", endpointObject);
-        activationContext.addExecutor("v8-bmicalc-v1.0/bmicalc", helloExecutor);
+        addKoToActivationContext(helloKoPackageName, helloKoDeploymentSpecName, helloKoEndpointName);
+        addKoToActivationContext(bmiKoPackageName, bmiKoDeploymentSpecName, bmiKoEndpointName);
+        Executor executor = getExecutor(executiveKoPackageName, executiveKoDeploymentSpecName, executiveKoEndpointName);
 
-        deploymentSpec = getDeploymentSpec("v8-executive-1.0.0/deployment.yaml");
-        endpointObject = deploymentSpec.get("endpoints").get("/process");
-        Executor executor = adapter.activate("v8-executive-1.0.0", "", "", endpointObject);
         Object helloResult = executor.execute("{\"name\":\"Bob\", \"weight\":70, \"height\":1.70}");
         assertEquals("{message: \"Hello, Bob\", bmi: \"24.2\"}",
                 helloResult.toString()
         );
+    }
+
+    private void addKoToActivationContext(String packageName, String deploymentSpecName, String endpointName) throws IOException {
+        JsonNode deploymentSpec = getDeploymentSpec(packageName + "/" + deploymentSpecName);
+        JsonNode endpointObject = deploymentSpec.get("endpoints").get(endpointName);
+        Executor helloExecutor = adapter.activate(packageName, "", "", endpointObject);
+        activationContext.addExecutor(packageName + endpointName, helloExecutor);
     }
 
     private JsonNode getDeploymentSpec(String deploymentLocation) throws IOException {
@@ -62,6 +71,10 @@ public class JsV8ExampleKOTest {
         return deploymentSpec;
     }
 
-
+    private Executor getExecutor(String packageName, String deploymentSpecName, String endpointName) throws IOException {
+        JsonNode deploymentSpec = getDeploymentSpec(packageName + "/" + deploymentSpecName);
+        JsonNode endpointObject = deploymentSpec.get("endpoints").get(endpointName);
+        return adapter.activate(packageName, "", "", endpointObject);
+    }
 }
 
