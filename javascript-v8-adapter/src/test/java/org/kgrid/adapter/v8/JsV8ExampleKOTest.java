@@ -48,9 +48,9 @@ public class JsV8ExampleKOTest {
 
         addKoToActivationContext(helloKoPackageName, helloKoDeploymentSpecName, helloKoEndpointName);
         addKoToActivationContext(bmiKoPackageName, bmiKoDeploymentSpecName, bmiKoEndpointName);
-        Executor executor = getExecutor(executiveKoPackageName, executiveKoDeploymentSpecName, executiveKoEndpointName);
+        Executor executiveExecutor = getExecutor(executiveKoPackageName, executiveKoDeploymentSpecName, executiveKoEndpointName);
 
-        Object helloResult = executor.execute("{\"name\":\"Bob\", \"weight\":70, \"height\":1.70}");
+        Object helloResult = executiveExecutor.execute("{\"name\":\"Bob\", \"weight\":70, \"height\":1.70}");
         assertEquals("{message: \"Hello, Bob\", bmi: \"24.2\"}",
                 helloResult.toString()
         );
