@@ -2,6 +2,9 @@
   <profiles>
     <profile>
       <id>ci</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
       <properties>
           <gpg.keyname>${env.GPG_KEYNAME}</gpg.keyname>
           <gpg.executable>gpg</gpg.executable>
