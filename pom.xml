@@ -2,11 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.kgrid</groupId>
-        <artifactId>kgrid-adapter</artifactId>
-        <version>0.10.5-SNAPSHOT</version>
-    </parent>
 
     <!-- The Basics -->
     <groupId>org.kgrid</groupId>
@@ -18,8 +13,13 @@
     <name>javascript-v8-adapter</name>
     <description>javascript adapter used to execute javascript resources</description>
 
+    <properties>
+        <kgrid.adapter.api.version>0.10.5-SNAPSHOT</kgrid.adapter.api.version>
+        <java.version>11</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+    </properties>
     <dependencies>
-
         <dependency>
             <groupId>org.graalvm.sdk</groupId>
             <artifactId>graal-sdk</artifactId>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
+            <version>4.13</version>
             <scope>test</scope>
         </dependency>
         <dependency>
