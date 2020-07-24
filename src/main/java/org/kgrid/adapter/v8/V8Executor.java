@@ -6,8 +6,8 @@ import org.kgrid.adapter.api.Executor;
 
 public class V8Executor implements Executor {
 
-    private Value wrapper;
-    private Value function;
+    public Value wrapper;
+    public Value function;
 
     public V8Executor(Value wrapper, Value function) {
         this.wrapper = wrapper;
