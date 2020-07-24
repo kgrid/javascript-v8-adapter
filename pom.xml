@@ -13,6 +13,13 @@
     <name>javascript-v8-adapter</name>
     <description>javascript adapter used to execute javascript resources</description>
 
+    <scm>
+        <url>https://github.com/kgrid/kgrid-adapter</url>
+        <connection>scm:git:https://github.com/kgrid/javascript-v8-adapter.git</connection>
+        <developerConnection>scm:git:https://github.com/kgrid/javascript-v8-adapter.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
     <properties>
         <java.version>11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
