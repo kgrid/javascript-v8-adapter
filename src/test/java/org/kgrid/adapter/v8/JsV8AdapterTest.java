@@ -11,9 +11,11 @@ import org.kgrid.adapter.api.Executor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.net.URI;
 import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -51,7 +53,7 @@ public class JsV8AdapterTest {
                     }
 
                     @Override
-                    public byte[] getBinary(String pathToBinary) {
+                    public byte[] getBinary(URI pathToBinary) {
                         return new byte[0];
                     }
 
@@ -67,12 +69,12 @@ public class JsV8AdapterTest {
     public void badArtifactThrowsGoodError() {
         RuntimeException runtimeException =
                 new RuntimeException("Binary resource not found src/tolkien.js");
-        when(activationContext.getBinary(Paths.get("hello-world/src/tolkien.js").toString()))
+        when(activationContext.getBinary(URI.create("hello-world/src/tolkien.js")))
                 .thenThrow(runtimeException);
         deploymentSpec.put("artifact", "src/tolkien.js");
 
         try {
-            adapter.activate("hello-world", "", "", deploymentSpec);
+            adapter.activate(URI.create("hello-world/"), "", "", "", "", deploymentSpec);
         } catch (Exception ex) {
             assertEquals("Error loading source", ex.getMessage());
             assertEquals(runtimeException, ex.getCause());
@@ -82,10 +84,10 @@ public class JsV8AdapterTest {
     @Test
     public void throwsGoodErrorWhenActivateCantFindFunction() throws Exception {
         deploymentSpec.put("function", "goodbye1");
-        when(activationContext.getBinary(anyString()))
+        when(activationContext.getBinary(any(URI.class)))
                 .thenReturn("function goodbye(name){ return 'Goodbye, ' + name;}".getBytes());
         try {
-            adapter.activate("hello-world", "", "", deploymentSpec);
+            adapter.activate(URI.create("hello-world/"), "", "", "", "", deploymentSpec);
         } catch (Exception ex) {
             assertEquals("Error loading source", ex.getMessage());
             assertEquals("Function goodbye1 not found", ex.getCause().getMessage());
