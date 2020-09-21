@@ -1,6 +1,7 @@
 package org.kgrid.adapter.v8;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
@@ -47,14 +48,24 @@ public class JsV8Adapter implements Adapter {
             .allowNativeAccess(true)
             .build();
     try {
-      String artifact = deploymentSpec.get("artifact").asText();
+      final JsonNode artifactNode = deploymentSpec.get("artifact");
+      String artifact;
+      if (artifactNode.isArray()) {
+        if(artifactNode.size() > 1 && deploymentSpec.has("entry")) {
+          artifact = deploymentSpec.get("entry").asText();
+        } else {
+          artifact = artifactNode.get(0).asText();
+        }
+      } else {
+         artifact = artifactNode.asText();
+      }
       URI artifactLocation = objectLocation.resolve(artifact);
       context.getBindings("js").putMember("context", activationContext);
       byte[] src = activationContext.getBinary(artifactLocation);
       String functionName = deploymentSpec.get("function").asText();
       context.eval("js", new String(src));
       return new V8Executor(
-              createWrapperFunction(context), context.getBindings("js").getMember(functionName));
+          createWrapperFunction(context), context.getBindings("js").getMember(functionName));
     } catch (Exception e) {
       throw new AdapterException("Error loading source", e);
     }
