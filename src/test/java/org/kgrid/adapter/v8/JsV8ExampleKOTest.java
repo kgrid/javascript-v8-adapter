@@ -36,6 +36,16 @@ public class JsV8ExampleKOTest {
     }
 
     @Test
+    public void testSampleObjectWithArtifactList() throws IOException {
+        URI bmiKoPackageName = URI.create("artifact-list-v1.0/");
+        String bmiKoDeploymentSpecName = "deployment.yaml";
+        String bmiKoEndpointName = "/bmicalc";
+        Executor executor = getExecutor(bmiKoPackageName, bmiKoDeploymentSpecName, bmiKoEndpointName);
+        Object bmiResult = executor.execute("{\"weight\":70, \"height\":1.70}");
+        assertEquals("24.2", bmiResult);
+    }
+
+    @Test
     public void testSampleExecutiveObjectWithStringifiedInputObjects() throws IOException {
         URI helloKoPackageName = URI.create("hello-world/");
         String helloKoDeploymentSpecName = "deploymentSpec.yaml";

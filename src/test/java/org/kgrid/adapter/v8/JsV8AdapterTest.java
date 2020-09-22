@@ -15,6 +15,7 @@ import java.net.URI;
 import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -92,6 +93,13 @@ public class JsV8AdapterTest {
             assertEquals("Error loading source", ex.getMessage());
             assertEquals("Function goodbye1 not found", ex.getCause().getMessage());
         }
+    }
+
+    @Test
+    public void worksWithListOfArtifacts() {
+
+        deploymentSpec.set("artifact", new ObjectMapper().createArrayNode().add("src/tolkien.js"));
+
     }
 
     @Test

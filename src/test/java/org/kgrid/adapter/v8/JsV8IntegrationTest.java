@@ -39,6 +39,33 @@ public class JsV8IntegrationTest {
   }
 
   @Test
+  public void testActivatesObjectWithArrayAndGetsExecutor() throws IOException {
+    JsonNode deploymentSpec = getDeploymentSpec("artifact-list-v1.0/deployment.yaml");
+    JsonNode endpointObject = deploymentSpec.get("endpoints").get("/bmicalc");
+    Executor executor = adapter.activate(URI.create("artifact-list-v1.0/"), "", "", "", "", endpointObject);
+    Object helloResult = executor.execute("{\"height\":2, \"weight\":80}");
+    assertEquals("20.0", helloResult);
+  }
+
+  @Test
+  public void testActivatesObjectWithArrayWithMultipleElementsAndGetsExecutor() throws IOException {
+    JsonNode deploymentSpec = getDeploymentSpec("artifact-list-v2.0/deployment.yaml");
+    JsonNode endpointObject = deploymentSpec.get("endpoints").get("/bmicalc");
+    Executor executor = adapter.activate(URI.create("artifact-list-v2.0/"), "", "", "", "", endpointObject);
+    Object helloResult = executor.execute("{\"height\":2, \"weight\":80}");
+    assertEquals("20.0", helloResult);
+  }
+
+  @Test
+  public void testActivatesObjectWithArrayWithMultipleElementsNoEntryAndGetsExecutor() throws IOException {
+    JsonNode deploymentSpec = getDeploymentSpec("artifact-list-v3.0/deployment.yaml");
+    JsonNode endpointObject = deploymentSpec.get("endpoints").get("/bmicalc");
+    Executor executor = adapter.activate(URI.create("artifact-list-v3.0/"), "", "", "", "", endpointObject);
+    Object helloResult = executor.execute("{\"height\":2, \"weight\":80}");
+    assertEquals("20.0", helloResult);
+  }
+
+  @Test
   public void testActivatesBundledJSObjectAndGetsExecutor() throws IOException {
     JsonNode deploymentSpec = getDeploymentSpec("hello-world-v1.3/deploymentSpec.yaml");
     JsonNode endpointObject = deploymentSpec.get("endpoints").get("/welcome");
