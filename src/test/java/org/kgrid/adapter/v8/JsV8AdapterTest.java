@@ -75,7 +75,7 @@ public class JsV8AdapterTest {
         deploymentSpec.put("artifact", "src/tolkien.js");
 
         try {
-            adapter.activate(URI.create("hello-world/"), "", "", "", "", deploymentSpec);
+            adapter.activate(URI.create("hello-world/"), null, deploymentSpec);
         } catch (Exception ex) {
             assertEquals("Error loading source", ex.getMessage());
             assertEquals(runtimeException, ex.getCause());
@@ -88,7 +88,7 @@ public class JsV8AdapterTest {
         when(activationContext.getBinary(any(URI.class)))
                 .thenReturn("function goodbye(name){ return 'Goodbye, ' + name;}".getBytes());
         try {
-            adapter.activate(URI.create("hello-world/"), "", "", "", "", deploymentSpec);
+            adapter.activate(URI.create("hello-world/"), null, deploymentSpec);
         } catch (Exception ex) {
             assertEquals("Error loading source", ex.getMessage());
             assertEquals("Function goodbye1 not found", ex.getCause().getMessage());

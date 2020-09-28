@@ -70,7 +70,7 @@ public class JsV8ExampleKOTest {
     private void addKoToActivationContext(URI packageName, String deploymentSpecName, String endpointName) throws IOException {
         JsonNode deploymentSpec = getDeploymentSpec(packageName.resolve(deploymentSpecName));
         JsonNode endpointObject = deploymentSpec.get("endpoints").get(endpointName);
-        Executor helloExecutor = adapter.activate(packageName, "", "", "", "", endpointObject);
+        Executor helloExecutor = adapter.activate(packageName, null, endpointObject);
         activationContext.addExecutor(packageName.resolve(endpointName.substring(1)).toString(), helloExecutor);
     }
 
@@ -85,7 +85,7 @@ public class JsV8ExampleKOTest {
     private Executor getExecutor(URI packageName, String deploymentSpecName, String endpointName) throws IOException {
         JsonNode deploymentSpec = getDeploymentSpec(packageName.resolve(deploymentSpecName));
         JsonNode endpointObject = deploymentSpec.get("endpoints").get(endpointName);
-        return adapter.activate(packageName, "", "", "", "", endpointObject);
+        return adapter.activate(packageName, null, endpointObject);
     }
 }
 

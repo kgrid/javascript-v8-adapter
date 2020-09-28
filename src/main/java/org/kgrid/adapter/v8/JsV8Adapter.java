@@ -66,17 +66,6 @@ public class JsV8Adapter implements Adapter {
   }
 
   @Override
-  public Executor activate(
-      URI objectLocation,
-      String naan,
-      String name,
-      String version,
-      String endpointName,
-      JsonNode deploymentSpec) {
-    return activate(objectLocation, null, deploymentSpec);
-  }
-
-  @Override
   public String status() {
     if (engine == null) {
       return "DOWN";
