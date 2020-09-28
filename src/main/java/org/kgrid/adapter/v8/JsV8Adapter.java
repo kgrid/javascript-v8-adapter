@@ -31,22 +31,16 @@ public class JsV8Adapter implements Adapter {
   }
 
   @Override
-  public Executor activate(
-      URI objectLocation,
-      String naan,
-      String name,
-      String version,
-      String endpointName,
-      JsonNode deploymentSpec) {
+  public Executor activate(URI absoluteLocation, URI endpointUri, JsonNode deploymentSpec) {
 
     Context context =
-        Context.newBuilder("js")
-            .allowHostAccess(HostAccess.ALL)
-            .allowExperimentalOptions(true)
-            .option("js.experimental-foreign-object-prototype", "true")
-            .allowHostClassLookup(className -> true)
-            .allowNativeAccess(true)
-            .build();
+            Context.newBuilder("js")
+                    .allowHostAccess(HostAccess.ALL)
+                    .allowExperimentalOptions(true)
+                    .option("js.experimental-foreign-object-prototype", "true")
+                    .allowHostClassLookup(className -> true)
+                    .allowNativeAccess(true)
+                    .build();
     try {
       final JsonNode artifactNode = deploymentSpec.get("artifact");
       String artifact;
@@ -57,18 +51,29 @@ public class JsV8Adapter implements Adapter {
           artifact = artifactNode.get(0).asText();
         }
       } else {
-         artifact = artifactNode.asText();
+        artifact = artifactNode.asText();
       }
-      URI artifactLocation = objectLocation.resolve(artifact);
+      URI artifactLocation = absoluteLocation.resolve(artifact);
       context.getBindings("js").putMember("context", activationContext);
       byte[] src = activationContext.getBinary(artifactLocation);
       String functionName = deploymentSpec.get("function").asText();
       context.eval("js", new String(src));
       return new V8Executor(
-          createWrapperFunction(context), context.getBindings("js").getMember(functionName));
+              createWrapperFunction(context), context.getBindings("js").getMember(functionName));
     } catch (Exception e) {
       throw new AdapterException("Error loading source", e);
     }
+  }
+
+  @Override
+  public Executor activate(
+      URI objectLocation,
+      String naan,
+      String name,
+      String version,
+      String endpointName,
+      JsonNode deploymentSpec) {
+    return activate(objectLocation, null, deploymentSpec);
   }
 
   @Override

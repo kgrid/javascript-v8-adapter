@@ -46,7 +46,7 @@
         <dependency>
             <groupId>org.kgrid</groupId>
             <artifactId>adapter-api</artifactId>
-            <version>0.10.9</version>
+            <version>0.10.11-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
