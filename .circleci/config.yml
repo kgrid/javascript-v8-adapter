@@ -8,14 +8,9 @@ workflows:
     jobs:
       - maven/test: # checkout, build, test, and upload test results
           context: kgrid
-          filters:
-            branches:
-              ignore: main
+          settings_file: ".circleci/settings.xml"
       - deploy:
           context: kgrid
-          filters:
-            branches:
-              only: main
 
 jobs:
   deploy: # mvn deploy does build, test, install, deploy (of the SNAPSHOT)

@@ -58,7 +58,7 @@ public class WrapperTest {
   private Executor getSimpleKoWithObjectInput(URI id) {
     when(activationContext.getBinary(id.resolve("index.js")))
         .thenReturn("function helloSimple(input){ return 'Hello, ' + input + '-simple';}".getBytes());
-    return adapter.activate(id, null, null, null, null,
+    return adapter.activate(id, null,
         mapper.createObjectNode()
         .put("function", "helloSimple")
         .put("artifact", "index.js"));
@@ -70,7 +70,7 @@ public class WrapperTest {
             + "var ex = context.getExecutor('hello-simple');"
             + "return 'Exec: ' + ex.execute(input) + '-exec';"
             + "}").getBytes());
-    return adapter.activate(id, null, null, null, null,
+    return adapter.activate(id, null,
         mapper.createObjectNode()
             .put("function", "helloExec")
             .put("artifact", "index.js")
