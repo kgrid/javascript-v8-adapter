@@ -9,9 +9,6 @@ workflows:
       - maven/test: # checkout, build, test, and upload test results
           context: kgrid
           settings_file: ".circleci/settings.xml"
-          filters:
-            branches:
-              ignore: main
       - deploy:
           context: kgrid
           filters:
