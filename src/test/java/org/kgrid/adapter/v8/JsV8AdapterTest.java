@@ -13,6 +13,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.net.URI;
 import java.nio.file.Paths;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -104,7 +105,7 @@ public class JsV8AdapterTest {
 
     @Test
     public void getTypeReturnsV8() {
-        assertEquals("V8", adapter.getType());
+        assertEquals(Collections.singletonList("javascript"), adapter.getEngines());
     }
 
 }

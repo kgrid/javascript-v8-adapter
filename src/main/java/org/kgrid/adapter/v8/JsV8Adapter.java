@@ -1,7 +1,6 @@
 package org.kgrid.adapter.v8;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
@@ -12,6 +11,8 @@ import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
 
 import java.net.URI;
+import java.util.Collections;
+import java.util.List;
 
 public class JsV8Adapter implements Adapter {
 
@@ -19,8 +20,8 @@ public class JsV8Adapter implements Adapter {
   ActivationContext activationContext;
 
   @Override
-  public String getType() {
-    return "V8";
+  public List<String> getEngines() {
+    return Collections.singletonList("javascript");
   }
 
   @Override
