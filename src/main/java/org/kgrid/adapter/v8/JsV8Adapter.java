@@ -77,15 +77,16 @@ public class JsV8Adapter implements Adapter {
   private Value createWrapperFunction(Context context) {
     context.eval(
         "js",
-        "function wrapper(baseFunction, arg) { "
+        "function wrapper(baseFunction, arg, contentType) { "
             + "let parsedArg;"
-            + "try {"
+            + "if(contentType === \"application/json\") {"
             + "   parsedArg = JSON.parse(arg);"
-            + "} catch (error) {"
+            + "return baseFunction(parsedArg);"
+            + "} else {"
             + "   return baseFunction(arg);"
             + "}"
-            + "return baseFunction(parsedArg);"
             + "}");
     return context.getBindings("js").getMember("wrapper");
   }
+
 }

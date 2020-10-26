@@ -39,7 +39,7 @@ public class WrapperTest {
   @Test
   public void simpleObjectCallWorks() {
     Executor executor = getSimpleKoWithObjectInput(URI.create("hello-world/"));
-    Object result = executor.execute("b");
+    Object result = executor.execute("b", "text/plain");
 
     assertEquals("Hello, b-simple", result);
   }
@@ -50,7 +50,7 @@ public class WrapperTest {
     when(activationContext.getExecutor("hello-simple")).thenReturn(ex);
 
     Executor executor = getExecKoWithObjectInput(URI.create("hello-exec/"));
-    Object result = executor.execute("Bob");
+    Object result = executor.execute("Bob", "text/plain");
 
     assertEquals("Exec: Hello, Bob-simple-exec", result);
   }
@@ -68,7 +68,7 @@ public class WrapperTest {
     when(activationContext.getBinary(id.resolve("index.js")))
         .thenReturn(("function helloExec(input){ "
             + "var ex = context.getExecutor('hello-simple');"
-            + "return 'Exec: ' + ex.execute(input) + '-exec';"
+            + "return 'Exec: ' + ex.execute(JSON.stringify(input), \"application/json\") + '-exec';"
             + "}").getBytes());
     return adapter.activate(id, null,
         mapper.createObjectNode()
