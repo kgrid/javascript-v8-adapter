@@ -77,12 +77,12 @@ public class JsV8Adapter implements Adapter {
   private Value createWrapperFunction(Context context) {
     context.eval(
         "js",
-        "function wrapper(baseFunction, arg) { "
+        "function wrapper(baseFunction, arg, contentHeader) { "
             + "let parsedArg;"
             + "try {"
             + "   parsedArg = JSON.parse(arg);"
             + "} catch (error) {"
-            + "   return baseFunction(arg);"
+            + "   return baseFunction(args, contentHeader);"
             + "}"
             + "return baseFunction(parsedArg);"
             + "}");
