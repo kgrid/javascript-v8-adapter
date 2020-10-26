@@ -20,7 +20,7 @@ public class V8Executor implements Executor {
             Value result = wrapper.execute(function, input, contentType);
             return result.as(Object.class);
         } catch (Exception e) {
-            throw new AdapterException("Code execution error", e);
+            throw new AdapterException("Code execution error: " + e.getMessage(), e);
         }
     }
 
