@@ -34,7 +34,7 @@ public class JsV8IntegrationTest {
     JsonNode deploymentSpec = getDeploymentSpec("hello-world/deploymentSpec.yaml");
     JsonNode endpointObject = deploymentSpec.get("endpoints").get("/welcome");
     Executor executor = adapter.activate(URI.create("hello-world/"), null, endpointObject);
-    Object helloResult = executor.execute("{\"name\":\"Bob\"}");
+    Object helloResult = executor.execute("{\"name\":\"Bob\"}", "application/json");
     assertEquals("Hello, Bob", helloResult);
   }
 
@@ -43,7 +43,7 @@ public class JsV8IntegrationTest {
     JsonNode deploymentSpec = getDeploymentSpec("artifact-list-v1.0/deployment.yaml");
     JsonNode endpointObject = deploymentSpec.get("endpoints").get("/bmicalc");
     Executor executor = adapter.activate(URI.create("artifact-list-v1.0/"), null, endpointObject);
-    Object helloResult = executor.execute("{\"height\":2, \"weight\":80}");
+    Object helloResult = executor.execute("{\"height\":2, \"weight\":80}", "application/json");
     assertEquals("20.0", helloResult);
   }
 
@@ -52,7 +52,7 @@ public class JsV8IntegrationTest {
     JsonNode deploymentSpec = getDeploymentSpec("artifact-list-v2.0/deployment.yaml");
     JsonNode endpointObject = deploymentSpec.get("endpoints").get("/bmicalc");
     Executor executor = adapter.activate(URI.create("artifact-list-v2.0/"), null, endpointObject);
-    Object helloResult = executor.execute("{\"height\":2, \"weight\":80}");
+    Object helloResult = executor.execute("{\"height\":2, \"weight\":80}", "application/json");
     assertEquals("20.0", helloResult);
   }
 
@@ -61,7 +61,7 @@ public class JsV8IntegrationTest {
     JsonNode deploymentSpec = getDeploymentSpec("artifact-list-v3.0/deployment.yaml");
     JsonNode endpointObject = deploymentSpec.get("endpoints").get("/bmicalc");
     Executor executor = adapter.activate(URI.create("artifact-list-v3.0/"), null, endpointObject);
-    Object helloResult = executor.execute("{\"height\":2, \"weight\":80}");
+    Object helloResult = executor.execute("{\"height\":2, \"weight\":80}", "application/json");
     assertEquals("20.0", helloResult);
   }
 
@@ -70,7 +70,7 @@ public class JsV8IntegrationTest {
     JsonNode deploymentSpec = getDeploymentSpec("hello-world-v1.3/deploymentSpec.yaml");
     JsonNode endpointObject = deploymentSpec.get("endpoints").get("/welcome");
     Executor executor = adapter.activate(URI.create("hello-world-v1.3/"), null, endpointObject);
-    Object helloResult = executor.execute("{\"name\":\"Bob\"}");
+    Object helloResult = executor.execute("{\"name\":\"Bob\"}", "application/json");
     assertEquals("Hello, Bob", helloResult);
   }
 
@@ -83,7 +83,7 @@ public class JsV8IntegrationTest {
     deploymentSpec = getDeploymentSpec("hello-exec/deploymentSpec.yaml");
     endpointObject = deploymentSpec.get("endpoints").get("/welcome");
     Executor executor = adapter.activate(URI.create("hello-exec/"), null, endpointObject);
-    Object helloResult = executor.execute("{\"name\":\"Bob\"}");
+    Object helloResult = executor.execute("{\"name\":\"Bob\"}", "application/json");
     assertEquals("Hello, Bob", helloResult);
   }
 
@@ -101,7 +101,7 @@ public class JsV8IntegrationTest {
     JsonNode deploymentSpec = getDeploymentSpec("v8-bmicalc-v1.0/deployment.yaml");
     JsonNode endpointObject = deploymentSpec.get("endpoints").get("/bmicalc");
     Executor executor = adapter.activate(URI.create("v8-bmicalc-v1.0/"), null, endpointObject);
-    Object bmiResult = executor.execute("{\"weight\":70, \"height\":1.70}");
+    Object bmiResult = executor.execute("{\"weight\":70, \"height\":1.70}", "application/json");
     assertEquals("24.2", bmiResult);
   }
 
@@ -120,7 +120,7 @@ public class JsV8IntegrationTest {
     deploymentSpec = getDeploymentSpec("v8-executive-1.0.0/deployment.yaml");
     endpointObject = deploymentSpec.get("endpoints").get("/process");
     Executor executor = adapter.activate(URI.create("v8-executive-1.0.0/"), null, endpointObject);
-    Object helloResult = executor.execute("{\"name\":\"Bob\", \"weight\":70, \"height\":1.70}");
+    Object helloResult = executor.execute("{\"name\":\"Bob\", \"weight\":70, \"height\":1.70}", "application/json");
     assertEquals("{message: \"Hello, Bob\", bmi: \"24.2\"}",
             helloResult.toString()
     );

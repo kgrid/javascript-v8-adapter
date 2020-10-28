@@ -31,7 +31,7 @@ public class JsV8ExampleKOTest {
         String bmiKoDeploymentSpecName = "deployment.yaml";
         String bmiKoEndpointName = "/bmicalc";
         Executor executor = getExecutor(bmiKoPackageName, bmiKoDeploymentSpecName, bmiKoEndpointName);
-        Object bmiResult = executor.execute("{\"weight\":70, \"height\":1.70}");
+        Object bmiResult = executor.execute("{\"weight\":70, \"height\":1.70}", "application/json");
         assertEquals("24.2", bmiResult);
     }
 
@@ -41,7 +41,7 @@ public class JsV8ExampleKOTest {
         String bmiKoDeploymentSpecName = "deployment.yaml";
         String bmiKoEndpointName = "/bmicalc";
         Executor executor = getExecutor(bmiKoPackageName, bmiKoDeploymentSpecName, bmiKoEndpointName);
-        Object bmiResult = executor.execute("{\"weight\":70, \"height\":1.70}");
+        Object bmiResult = executor.execute("{\"weight\":70, \"height\":1.70}", "application/json");
         assertEquals("24.2", bmiResult);
     }
 
@@ -61,7 +61,7 @@ public class JsV8ExampleKOTest {
         addKoToActivationContext(bmiKoPackageName, bmiKoDeploymentSpecName, bmiKoEndpointName);
         Executor executiveExecutor = getExecutor(executiveKoPackageName, executiveKoDeploymentSpecName, executiveKoEndpointName);
 
-        Object helloResult = executiveExecutor.execute("{\"name\":\"Bob\", \"weight\":70, \"height\":1.70}");
+        Object helloResult = executiveExecutor.execute("{\"name\":\"Bob\", \"weight\":70, \"height\":1.70}", "application/json");
         assertEquals("{message: \"Hello, Bob\", bmi: \"24.2\"}",
                 helloResult.toString()
         );

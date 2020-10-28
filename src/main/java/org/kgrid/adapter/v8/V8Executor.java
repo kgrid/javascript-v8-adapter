@@ -15,13 +15,24 @@ public class V8Executor implements Executor {
     }
 
     @Override
-    public Object execute(Object input) {
+    public Object execute(Object input, String contentType) {
         try {
-            Value result = wrapper.execute(function, input);
+            Value result = wrapper.execute(function, input, contentType);
             return result.as(Object.class);
         } catch (Exception e) {
-            throw new AdapterException("Code execution error", e);
+            throw new AdapterException("Code execution error: " + e.getMessage(), e);
         }
     }
+
+    // Overloaded and waiting for a future where we can simply pass javascript variables between contexts
+    // Uncomment when https://github.com/oracle/graal/issues/631#issuecomment-716611797 is fixed
+//    public Object execute(Object input) {
+//        try {
+//            Value result = function.execute(input);
+//            return result.as(Object.class);
+//        } catch (Exception e) {
+//            throw new AdapterException("Code execution error", e);
+//        }
+//    }
 
 }
