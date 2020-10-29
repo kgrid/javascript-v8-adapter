@@ -78,7 +78,7 @@ public class JsV8AdapterTest {
         try {
             adapter.activate(URI.create("hello-world/"), null, deploymentSpec);
         } catch (Exception ex) {
-            assertEquals("Error loading source", ex.getMessage());
+            assertEquals("Error loading source. Binary resource not found src/tolkien.js", ex.getMessage());
             assertEquals(runtimeException, ex.getCause());
         }
     }
