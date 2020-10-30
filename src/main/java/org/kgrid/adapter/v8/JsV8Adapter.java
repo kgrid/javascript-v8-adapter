@@ -40,6 +40,7 @@ public class JsV8Adapter implements Adapter {
             .allowHostAccess(HostAccess.ALL)
             .allowExperimentalOptions(true)
             .option("js.experimental-foreign-object-prototype", "true")
+            .option("js.commonjs-require", "true")
             .allowHostClassLookup(className -> true)
             .allowNativeAccess(true)
             .build();
