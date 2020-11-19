@@ -15,7 +15,7 @@ public class V8Executor implements Executor {
     }
 
     @Override
-    public Object execute(Object input, String contentType) {
+    public synchronized Object execute(Object input, String contentType) {
         try {
             Value result = wrapper.execute(function, input, contentType);
             return result.as(Object.class);
