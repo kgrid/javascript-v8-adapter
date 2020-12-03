@@ -6,23 +6,48 @@ This javascript adapter uses the GraalVM javascript engine to run object payload
 Any simple javascript file containing functions can be easily run using this adapter but more complex objects with 
 external dependencies should be bundled into one file. (See the guide on creating a bundled KO.)
 
-Example deployment descriptor:
-```yaml
-endpoints:
-  /welcome:
-    artifact:
-      - 'src/welcome.js'
-    adapter: 'V8'
-    function: 'welcome'
+## Installation
+
+This is an embedded runtime, already pulled in by the activator
+as a dependency. If you'd like to include it in your maven project,
+do so by adding the following dependency to your pom.xml file:
+```
+<dependency>
+  <groupId>org.kgrid</groupId>
+  <artifactId>javascript-v8-adapter</artifactId>
+</dependency>
 ```
 
-### Clone
-To get started you can simply clone this repository using git:
+## Configuration
+There are currently no configurable settings for this adapter.
+
+## Start the runtime
+As an embedded adapter, this will automatically be enabled when the activator starts.
+
+##Guidance for Knowledge Object Developers
+Thi adapter is for activating Knowledge Objects written in javascript.
+
+An example KO with naan of `hello`, a name of `neighbor`, api version of `1.0`, and endpoint `welcome`,
+a Deployment Specification might look like this:
+
+```yaml
+/welcome:
+  post:
+    artifact:
+      - "src/hello.js"
+    engine: "javacript"
+    function: "main"
 ```
-git clone https://github.com/kgrid/javascript-v8-adapter.git
-cd javascript-v8-adapter
-```
-Install the adapters to your local maven repository where they can then be used as dependencies by the activator:
-```
-mvn clean install
-```
+Where `function` is the name of the main entry function.
+
+You would then execute this endpoint to see the code work: 
+
+`POST <activator url>/<naan>/<name>/<api version>/<endpoint>`
+
+In this example: `POST <activator url>/hello/neighbor/1.0/welcome`
+##Examples
+An example KO can be found in our [example collection](https://github.com/kgrid-objects/example-collection/releases/latest) here:
+[js/simple/1.0](https://github.com/kgrid-objects/example-collection/releases/download/4.1.0/js-simple-v1.0.zip)
+
+##Importnat Notes
+- Currently, multi-artifact KOs are not supported as the `import` statement is not supported in Graal VM.
