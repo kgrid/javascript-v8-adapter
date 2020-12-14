@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.nio.file.Paths;
 import org.junit.Before;
@@ -57,7 +58,7 @@ public class WrapperTest {
 
   private Executor getSimpleKoWithObjectInput(URI id) {
     when(activationContext.getBinary(id.resolve("index.js")))
-        .thenReturn("function helloSimple(input){ return 'Hello, ' + input + '-simple';}".getBytes());
+        .thenReturn(new ByteArrayInputStream("function helloSimple(input){ return 'Hello, ' + input + '-simple';}".getBytes()));
     return adapter.activate(id, null,
         mapper.createObjectNode()
         .put("function", "helloSimple")
@@ -66,10 +67,10 @@ public class WrapperTest {
 
   private Executor getExecKoWithObjectInput(final URI id) {
     when(activationContext.getBinary(id.resolve("index.js")))
-        .thenReturn(("function helloExec(input){ "
+        .thenReturn(new ByteArrayInputStream(("function helloExec(input){ "
             + "var ex = context.getExecutor('hello-simple');"
             + "return 'Exec: ' + ex.execute(JSON.stringify(input), \"application/json\") + '-exec';"
-            + "}").getBytes());
+            + "}").getBytes()));
     return adapter.activate(id, null,
         mapper.createObjectNode()
             .put("function", "helloExec")

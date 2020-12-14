@@ -11,6 +11,8 @@ import org.kgrid.adapter.api.Executor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -55,8 +57,8 @@ public class JsV8AdapterTest {
                     }
 
                     @Override
-                    public byte[] getBinary(URI pathToBinary) {
-                        return new byte[0];
+                    public InputStream getBinary(URI pathToBinary) {
+                        return null;
                     }
 
                     @Override
@@ -87,7 +89,7 @@ public class JsV8AdapterTest {
     public void throwsGoodErrorWhenActivateCantFindFunction() throws Exception {
         deploymentSpec.put("function", "goodbye1");
         when(activationContext.getBinary(any(URI.class)))
-                .thenReturn("function goodbye(name){ return 'Goodbye, ' + name;}".getBytes());
+                .thenReturn(new ByteArrayInputStream("function goodbye(name){ return 'Goodbye, ' + name;}".getBytes()));
         try {
             adapter.activate(URI.create("hello-world/"), null, deploymentSpec);
         } catch (Exception ex) {

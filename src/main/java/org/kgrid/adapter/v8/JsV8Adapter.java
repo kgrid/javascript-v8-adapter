@@ -9,6 +9,7 @@ import org.kgrid.adapter.api.Executor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
@@ -57,9 +58,9 @@ public class JsV8Adapter implements Adapter {
     try {
       URI artifactLocation = absoluteLocation.resolve(artifact);
       context.getBindings("js").putMember("context", activationContext);
-      byte[] src = activationContext.getBinary(artifactLocation);
+      InputStream src = activationContext.getBinary(artifactLocation);
       String functionName = deploymentSpec.get("function").asText();
-      context.eval("js", new String(src));
+      context.eval("js", new String(src.readAllBytes()));
       return new V8Executor(
           createWrapperFunction(context), context.getBindings("js").getMember(functionName));
     } catch (PolyglotException e) {

@@ -11,6 +11,7 @@ import org.kgrid.adapter.api.Executor;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -139,9 +140,9 @@ class TestActivationContext implements ActivationContext {
   }
 
   @Override
-  public byte[] getBinary(URI s) {
+  public InputStream getBinary(URI s) {
     try {
-      return new ClassPathResource(s.toString()).getInputStream().readAllBytes();
+      return new ClassPathResource(s.toString()).getInputStream();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
