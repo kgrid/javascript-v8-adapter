@@ -2,8 +2,8 @@ package org.kgrid.adapter.v8;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.kgrid.adapter.api.ActivationContext;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
@@ -16,14 +16,15 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JsV8IntegrationTest {
 
   Adapter adapter;
   TestActivationContext activationContext;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     activationContext = new TestActivationContext();
     adapter = new JsV8Adapter();
@@ -58,7 +59,8 @@ public class JsV8IntegrationTest {
   }
 
   @Test
-  public void testActivatesObjectWithArrayWithMultipleElementsNoEntryAndGetsExecutor() throws IOException {
+  public void testActivatesObjectWithArrayWithMultipleElementsNoEntryAndGetsExecutor()
+      throws IOException {
     JsonNode deploymentSpec = getDeploymentSpec("artifact-list-v3.0/deployment.yaml");
     JsonNode endpointObject = deploymentSpec.get("endpoints").get("/bmicalc");
     Executor executor = adapter.activate(URI.create("artifact-list-v3.0/"), null, endpointObject);
@@ -75,7 +77,7 @@ public class JsV8IntegrationTest {
     assertEquals("Hello, Bob", helloResult);
   }
 
-  @Test(expected = AdapterException.class)
+  @Test
   public void testCantCallOtherExecutor() throws IOException {
     JsonNode deploymentSpec = getDeploymentSpec("hello-world/deploymentSpec.yaml");
     JsonNode endpointObject = deploymentSpec.get("endpoints").get("/welcome");
@@ -84,18 +86,15 @@ public class JsV8IntegrationTest {
     deploymentSpec = getDeploymentSpec("hello-exec/deploymentSpec.yaml");
     endpointObject = deploymentSpec.get("endpoints").get("/welcome");
     Executor executor = adapter.activate(URI.create("hello-exec/"), null, endpointObject);
-    Object helloResult = executor.execute("{\"name\":\"Bob\"}", "application/json");
-    assertEquals("Hello, Bob", helloResult);
+    assertThrows(
+        AdapterException.class, () -> executor.execute("{\"name\":\"Bob\"}", "application/json"));
   }
 
   private JsonNode getDeploymentSpec(String deploymentLocation) throws IOException {
     YAMLMapper yamlMapper = new YAMLMapper();
     ClassPathResource classPathResource = new ClassPathResource(deploymentLocation);
-    JsonNode deploymentSpec =
-        yamlMapper.readTree(classPathResource.getInputStream().readAllBytes());
-    return deploymentSpec;
+    return yamlMapper.readTree(classPathResource.getInputStream().readAllBytes());
   }
-
 
   @Test
   public void testActivatesTestObjectAndGetsExecutor() throws IOException {
@@ -113,21 +112,18 @@ public class JsV8IntegrationTest {
     Executor helloExecutor = adapter.activate(URI.create("hello-world/"), null, endpointObject);
     activationContext.addExecutor("hello-world/welcome", helloExecutor);
 
-     deploymentSpec = getDeploymentSpec("v8-bmicalc-v1.0/deployment.yaml");
-     endpointObject = deploymentSpec.get("endpoints").get("/bmicalc");
-     helloExecutor = adapter.activate(URI.create("v8-bmicalc-v1.0/"), null, endpointObject);
+    deploymentSpec = getDeploymentSpec("v8-bmicalc-v1.0/deployment.yaml");
+    endpointObject = deploymentSpec.get("endpoints").get("/bmicalc");
+    helloExecutor = adapter.activate(URI.create("v8-bmicalc-v1.0/"), null, endpointObject);
     activationContext.addExecutor("v8-bmicalc-v1.0/bmicalc", helloExecutor);
 
     deploymentSpec = getDeploymentSpec("v8-executive-1.0.0/deployment.yaml");
     endpointObject = deploymentSpec.get("endpoints").get("/process");
     Executor executor = adapter.activate(URI.create("v8-executive-1.0.0/"), null, endpointObject);
-    Object helloResult = executor.execute("{\"name\":\"Bob\", \"weight\":70, \"height\":1.70}", "application/json");
-    assertEquals("{message: \"Hello, Bob\", bmi: \"24.2\"}",
-            helloResult.toString()
-    );
+    Object helloResult =
+        executor.execute("{\"name\":\"Bob\", \"weight\":70, \"height\":1.70}", "application/json");
+    assertEquals("{message: \"Hello, Bob\", bmi: \"24.2\"}", helloResult.toString());
   }
-
-
 }
 
 class TestActivationContext implements ActivationContext {
@@ -153,8 +149,7 @@ class TestActivationContext implements ActivationContext {
     return null;
   }
 
-  public void addExecutor(String id, Executor executor){
+  public void addExecutor(String id, Executor executor) {
     executorMap.put(id, executor);
   }
 }
-

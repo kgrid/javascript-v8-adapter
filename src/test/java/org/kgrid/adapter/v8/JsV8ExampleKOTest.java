@@ -2,8 +2,8 @@ package org.kgrid.adapter.v8;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.Executor;
 import org.springframework.core.io.ClassPathResource;
@@ -11,14 +11,14 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.IOException;
 import java.net.URI;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JsV8ExampleKOTest {
 
     Adapter adapter;
     TestActivationContext activationContext;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         activationContext = new TestActivationContext();
         adapter = new JsV8Adapter();
@@ -77,9 +77,7 @@ public class JsV8ExampleKOTest {
     private JsonNode getDeploymentSpec(URI deploymentLocation) throws IOException {
         YAMLMapper yamlMapper = new YAMLMapper();
         ClassPathResource classPathResource = new ClassPathResource(deploymentLocation.toString());
-        JsonNode deploymentSpec =
-                yamlMapper.readTree(classPathResource.getInputStream().readAllBytes());
-        return deploymentSpec;
+        return yamlMapper.readTree(classPathResource.getInputStream().readAllBytes());
     }
 
     private Executor getExecutor(URI packageName, String deploymentSpecName, String endpointName) throws IOException {
