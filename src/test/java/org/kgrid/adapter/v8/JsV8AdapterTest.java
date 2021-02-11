@@ -62,6 +62,11 @@ public class JsV8AdapterTest {
           public String getProperty(String key) {
             return null;
           }
+
+          @Override
+          public void reactivate(String s) {
+
+          }
         });
     assertEquals("UP", adapter.status());
   }
