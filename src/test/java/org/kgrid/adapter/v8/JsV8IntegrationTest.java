@@ -150,7 +150,7 @@ class TestActivationContext implements ActivationContext {
   }
 
   @Override
-  public void reactivate(String s) {
+  public void refresh(String s) {
 
   }
 

@@ -64,7 +64,7 @@ public class JsV8AdapterTest {
           }
 
           @Override
-          public void reactivate(String s) {
+          public void refresh(String s) {
 
           }
         });
