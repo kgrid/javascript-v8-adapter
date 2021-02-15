@@ -149,7 +149,12 @@ class TestActivationContext implements ActivationContext {
     return null;
   }
 
-  public void addExecutor(String id, Executor executor) {
+  @Override
+  public void refresh(String s) {
+
+  }
+
+  public void addExecutor(String id, Executor executor){
     executorMap.put(id, executor);
   }
 }
