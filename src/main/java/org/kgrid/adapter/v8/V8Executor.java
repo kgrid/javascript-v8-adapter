@@ -1,7 +1,10 @@
 package org.kgrid.adapter.v8;
 
+import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Value;
+import org.kgrid.adapter.api.AdapterClientErrorException;
 import org.kgrid.adapter.api.AdapterException;
+import org.kgrid.adapter.api.AdapterServerErrorException;
 import org.kgrid.adapter.api.Executor;
 
 public class V8Executor implements Executor {
@@ -19,7 +22,15 @@ public class V8Executor implements Executor {
         try {
             Value result = wrapper.execute(function, input, contentType);
             return result.as(Object.class);
-        } catch (Exception e) {
+        }
+        catch (PolyglotException e){
+           if(e.isGuestException()){
+               throw new AdapterClientErrorException("Code execution error: " + e.getMessage(), e);
+           }else {
+               throw new AdapterServerErrorException("Code execution error: " + e.getMessage(), e);
+           }
+        }
+        catch (Exception e) {
             throw new AdapterException("Code execution error: " + e.getMessage(), e);
         }
     }
