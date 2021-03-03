@@ -91,7 +91,7 @@ public class JsV8Adapter implements Adapter {
             + "   try {"
             + "      parsedArg = JSON.parse(arg);"
             + "   } catch (e) {"
-            + "      throw new Error('Cannot parse json input ' + arg);"
+            + "      throw new Error(e.message);"
             + "   }"
             + "return baseFunction(parsedArg);"
             + "} else {"

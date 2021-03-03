@@ -46,7 +46,7 @@ public class V8ExecutorTest {
       v8Executor.execute(5, "text/plain");
       fail();
     } catch (AdapterException e) {
-      assertEquals("Code execution error: null", e.getMessage());
+      assertEquals(null, e.getMessage());
     }
   }
 }

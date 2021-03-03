@@ -25,13 +25,13 @@ public class V8Executor implements Executor {
         }
         catch (PolyglotException e){
            if(e.isGuestException()){
-               throw new AdapterClientErrorException("Code execution error: " + e.getMessage(), e);
+               throw new AdapterClientErrorException(e.getMessage(), e);
            }else {
-               throw new AdapterServerErrorException("Code execution error: " + e.getMessage(), e);
+               throw new AdapterServerErrorException(e.getMessage(), e);
            }
         }
         catch (Exception e) {
-            throw new AdapterException("Code execution error: " + e.getMessage(), e);
+            throw new AdapterException(e.getMessage(), e);
         }
     }
 
