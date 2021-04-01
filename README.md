@@ -38,7 +38,7 @@ a Deployment Specification might look like this:
     engine: "javacript"
     function: "main"
 ```
-Where `function` is the name of the main entry function.
+Where `function` is the name of the main javascript entry function.
 
 You would then execute this endpoint to see the code work: 
 
@@ -47,7 +47,7 @@ You would then execute this endpoint to see the code work:
 In this example: `POST <activator url>/hello/neighbor/1.0/welcome`
 ##Examples
 An example KO can be found in our [example collection](https://github.com/kgrid-objects/example-collection/releases/latest) here:
-[js/simple/1.0](https://github.com/kgrid-objects/example-collection/releases/download/4.1.0/js-simple-v1.0.zip)
+[js/simple/1.0](https://github.com/kgrid-objects/example-collection/releases/latest/download/js-simple-v1.0.zip)
 
-##Importnat Notes
-- Currently, multi-artifact KOs are not supported as the `import` statement is not supported in Graal VM.
+##Important Notes
+- Currently, multi-artifact KOs are not supported as the `import` statement is not supported in Graal VM. You can use a javascript compiler such as [babel](https://babeljs.io/) to build your code into a single file that is compatible with this adapter.
