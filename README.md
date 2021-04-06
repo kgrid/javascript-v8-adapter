@@ -24,8 +24,8 @@ There are currently no configurable settings for this adapter.
 ## Start the runtime
 As an embedded adapter, this will automatically be enabled when the activator starts.
 
-##Guidance for Knowledge Object Developers
-Thi adapter is for activating Knowledge Objects written in javascript.
+## Guidance for Knowledge Object Developers
+This adapter is for activating Knowledge Objects written in javascript.
 
 An example KO with naan of `hello`, a name of `neighbor`, api version of `1.0`, and endpoint `welcome`,
 a Deployment Specification might look like this:
