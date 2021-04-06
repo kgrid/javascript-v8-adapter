@@ -24,6 +24,10 @@ There are currently no configurable settings for this adapter.
 ## Start the runtime
 As an embedded adapter, this will automatically be enabled when the activator starts.
 
+## Examples
+An example KO can be found in our [example collection](https://github.com/kgrid-objects/example-collection/) here:
+[js/simple/1.0](https://github.com/kgrid-objects/example-collection/releases/latest/download/js-simple-v1.0.zip)
+
 ## Guidance for Knowledge Object Developers
 This adapter is for activating Knowledge Objects written in javascript.
 
@@ -45,9 +49,52 @@ You would then execute this endpoint to see the code work:
 `POST <activator url>/<naan>/<name>/<api version>/<endpoint>`
 
 In this example: `POST <activator url>/hello/neighbor/1.0/welcome`
-##Examples
-An example KO can be found in our [example collection](https://github.com/kgrid-objects/example-collection/releases/latest) here:
-[js/simple/1.0](https://github.com/kgrid-objects/example-collection/releases/latest/download/js-simple-v1.0.zip)
 
-##Important Notes
+The Service Specification for this object would likewise then be
+
+```yaml
+openapi: 3.0.2
+info:
+  version: '1.0'
+  title: 'Hello neighbor'
+  description: An example of simple Knowledge Object
+  license:
+    name: GNU General Public License v3 (GPL-3)
+    url: >-
+      https://tldrlegal.com/license/gnu-general-public-license-v3-(gpl-3)#fulltext
+  contact:
+    name: KGrid Team
+    email: kgrid-developers@umich.edu
+    url: 'http://kgrid.org'
+servers:
+  - url: /js/neighbor
+    description: Hello world
+tags:
+  - name: KO Endpoints
+    description: Hello world Endpoints
+paths:
+  /welcome:
+    post:
+      ... 
+
+```
+
+In the Service Specification the servers.url must match the naan and name of the object (`/js/neighbor`) and the path must match the path in Deployment Specification (`/welcome`).
+The service spec conforms to the swagger [OpenAPI spec.](https://swagger.io/specification/)
+
+You can call other activated object endpoints in the activator from your javascript using `let childEndpoint = context.getExecutor("naan/name/api-version/endpoint");` to get a reference to the main function specified by the Deployment Specification for that endpoint. Then you can invoke that function by passing it an argument and the content type (as a string) of the argument:  `let result = childEndpoint.execute("inputs", "text/plain");`. Note that due to a [restriction in the Graal JS engine](https://github.com/oracle/graal/issues/631) you can only pass primitives as inputs, not objects or arrays. If you want to pass an object you must use `JSON.stringify` and then pass it in with the content type `"application/json"` which will ensure that it is parsed correctly.
+
+The context object also allows you to access environment variables using `context.getProperty(property.name)`.
+
+## Important Notes
 - Currently, multi-artifact KOs are not supported as the `import` statement is not supported in Graal VM. You can use a javascript compiler such as [babel](https://babeljs.io/) to build your code into a single file that is compatible with this adapter.
+
+- The v8 engine cannot return native javascript arrays. You can work around this problem by using javascript objects instead.
+  Or use the graal polyglot methods for creating a java array in javascript:
+    ```javascript
+    let intArray = Java.type('int[]');
+    let iarr = new intArray(3);
+    return iarr;
+    ```
+  
+- See the [GraalVM documentation](https://www.graalvm.org/reference-manual/js/JavaScriptCompatibility/) for more information on the capabilities and limitations of the GraalVM javascript implementation.
