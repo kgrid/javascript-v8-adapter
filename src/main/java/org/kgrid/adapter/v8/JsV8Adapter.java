@@ -31,6 +31,8 @@ public class JsV8Adapter implements Adapter {
 
     activationContext = context;
     engine = Engine.newBuilder().build();
+
+    activationContext.refresh(getEngines().get(0));
   }
 
   @Override
