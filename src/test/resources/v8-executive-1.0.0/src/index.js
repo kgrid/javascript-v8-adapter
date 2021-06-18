@@ -5,12 +5,12 @@ function process(inputs){
 
   var results ={}
   if(hello!=null) {
-    results.message = hello.execute(JSON.stringify(inputs), "application/json")
+    results.message = hello.execute(inputs, "application/json")
   }else {
     results.message = "Error: KO not found."
   }
   if(bmi!=null) {
-    results.bmi =  bmi.execute(JSON.stringify(inputs), "application/json")
+    results.bmi =  bmi.execute(inputs, "application/json")
   }else {
     results.bmi ="Error: KO not found."
   }
