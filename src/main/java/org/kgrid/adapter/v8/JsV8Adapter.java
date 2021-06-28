@@ -40,7 +40,7 @@ public class JsV8Adapter implements Adapter {
 
         Context context =
                 Context.newBuilder("js")
-                        .allowHostAccess(HostAccess.ALL)
+                        .allowHostAccess(HostAccess.ALL).allowPolyglotAccess(PolyglotAccess.newBuilder().build())
                         .allowExperimentalOptions(true)
                         .option("js.experimental-foreign-object-prototype", "true")
                         .allowHostClassLookup(className -> true)

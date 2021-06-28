@@ -1,6 +1,7 @@
 package org.kgrid.adapter.v8;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -144,8 +145,8 @@ public class JsV8IntegrationTest {
     inputs.put("height", 1.70);
     inputs.put("weight", 70);
     Object helloResult =
-        executor.execute(inputs, "application/json");
-    assertEquals("{message: \"Hello, Bob\", bmi: \"24.2\"}", helloResult.toString());
+        new ObjectMapper().writeValueAsString(executor.execute(inputs, "application/json"));
+    assertEquals("{\"message\":\"Hello, Bob\",\"bmi\":\"24.2\"}", helloResult);
   }
 }
 
