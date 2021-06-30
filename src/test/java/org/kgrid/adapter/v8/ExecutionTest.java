@@ -19,7 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class WrapperTest {
+public class ExecutionTest {
   Adapter adapter;
   ObjectNode deploymentSpec;
 
@@ -69,7 +69,7 @@ public class WrapperTest {
     when(activationContext.getBinary(id.resolve("index.js")))
         .thenReturn(new ByteArrayInputStream(("function helloExec(input){ "
             + "var ex = context.getExecutor('hello-simple');"
-            + "return 'Exec: ' + ex.execute(JSON.stringify(input), \"application/json\") + '-exec';"
+            + "return 'Exec: ' + ex.execute(input, \"application/json\") + '-exec';"
             + "}").getBytes()));
     return adapter.activate(id, null,
         mapper.createObjectNode()

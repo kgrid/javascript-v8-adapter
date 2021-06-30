@@ -1,15 +1,19 @@
 package org.kgrid.adapter.v8;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.Executor;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.codec.json.Jackson2JsonEncoder;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -31,7 +35,10 @@ public class JsV8ExampleKOTest {
         String bmiKoDeploymentSpecName = "deployment.yaml";
         String bmiKoEndpointName = "/bmicalc";
         Executor executor = getExecutor(bmiKoPackageName, bmiKoDeploymentSpecName, bmiKoEndpointName);
-        Object bmiResult = executor.execute("{\"weight\":70, \"height\":1.70}", "application/json");
+        Map<String, Object> inputs = new LinkedHashMap<>();
+        inputs.put("height", 1.70);
+        inputs.put("weight", 70);
+        Object bmiResult = executor.execute(inputs, "application/json");
         assertEquals("24.2", bmiResult);
     }
 
@@ -41,7 +48,10 @@ public class JsV8ExampleKOTest {
         String bmiKoDeploymentSpecName = "deployment.yaml";
         String bmiKoEndpointName = "/bmicalc";
         Executor executor = getExecutor(bmiKoPackageName, bmiKoDeploymentSpecName, bmiKoEndpointName);
-        Object bmiResult = executor.execute("{\"weight\":70, \"height\":1.70}", "application/json");
+        Map<String, Object> inputs = new LinkedHashMap<>();
+        inputs.put("height", 1.70);
+        inputs.put("weight", 70);
+        Object bmiResult = executor.execute(inputs, "application/json");
         assertEquals("24.2", bmiResult);
     }
 
@@ -60,10 +70,13 @@ public class JsV8ExampleKOTest {
         addKoToActivationContext(helloKoPackageName, helloKoDeploymentSpecName, helloKoEndpointName);
         addKoToActivationContext(bmiKoPackageName, bmiKoDeploymentSpecName, bmiKoEndpointName);
         Executor executiveExecutor = getExecutor(executiveKoPackageName, executiveKoDeploymentSpecName, executiveKoEndpointName);
-
-        Object helloResult = executiveExecutor.execute("{\"name\":\"Bob\", \"weight\":70, \"height\":1.70}", "application/json");
-        assertEquals("{message: \"Hello, Bob\", bmi: \"24.2\"}",
-                helloResult.toString()
+        Map<String, Object> inputs = new LinkedHashMap<>();
+        inputs.put("name", "Bob");
+        inputs.put("height", 1.70);
+        inputs.put("weight", 70);
+        Object helloResult = new ObjectMapper().writeValueAsString(executiveExecutor.execute(inputs, "application/json"));
+        assertEquals("{\"message\":\"Hello, Bob\",\"bmi\":\"24.2\"}",
+                helloResult
         );
     }
 
