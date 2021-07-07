@@ -42,7 +42,7 @@ public class V8ExecutorTest {
       v8Executor.execute(5, "text/plain");
       fail();
     } catch (AdapterException e) {
-      assertEquals(null, e.getMessage());
+      assertNull(e.getMessage());
     }
   }
 }

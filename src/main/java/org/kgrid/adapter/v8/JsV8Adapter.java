@@ -59,11 +59,19 @@ public class JsV8Adapter implements Adapter {
         }
         try {
             URI artifactLocation = absoluteLocation.resolve(artifact);
-            context.getBindings("js").putMember("context", activationContext);
-            InputStream src = activationContext.getBinary(artifactLocation);
             String functionName = deploymentSpec.get("function").asText();
-            context.eval("js", new String(src.readAllBytes()));
-            return new V8Executor(context.getBindings("js").getMember(functionName));
+            if (artifact.endsWith(".mjs")) {
+                String srcLocation = getSrcLocation(artifactLocation);
+                String baseFunctionCode = String.format("import {%s} from '%s';\n" +
+                        "%s;", functionName, srcLocation, functionName);
+                Value function = context.eval(Source.newBuilder("js", baseFunctionCode, artifact).build());
+                return new V8Executor(function);
+            } else {
+                context.getBindings("js").putMember("context", activationContext);
+                InputStream src = activationContext.getBinary(artifactLocation);
+                context.eval(Source.newBuilder("js", new String(src.readAllBytes()), artifactLocation.toString()).build());
+                return new V8Executor(context.getBindings("js").getMember(functionName));
+            }
         } catch (PolyglotException e) {
             String errorWithFilename = e.getMessage().replace("Unnamed", artifact);
             String errorMessage = errorWithFilename.substring(0, errorWithFilename.indexOf("\r\n"));
@@ -73,6 +81,18 @@ public class JsV8Adapter implements Adapter {
             log.error(e.getMessage());
             throw new AdapterException("Error loading source. " + e.getMessage(), e);
         }
+    }
+
+    private String getSrcLocation(URI artifactLocation) {
+        String shelfLocation = activationContext.getProperty("kgrid.shelf.cdostore.url");
+        if(shelfLocation == null) {
+            return artifactLocation.toString();
+        }
+        if (!shelfLocation.endsWith("/")) {
+            shelfLocation += "/";
+        }
+        URI importUri = URI.create(shelfLocation.substring(shelfLocation.indexOf(':') + 1)).resolve(artifactLocation);
+        return importUri.getHost() == null ? importUri.getPath() : importUri.getHost() + importUri.getPath();
     }
 
     @Override
