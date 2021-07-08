@@ -1,0 +1,7 @@
+/welcome:
+  post:
+    artifact:
+      - src/index.mjs
+      - src/math.mjs
+    engine: javascript
+    function: welcome

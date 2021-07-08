@@ -12,7 +12,9 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JsV8Adapter implements Adapter {
 
@@ -38,11 +40,15 @@ public class JsV8Adapter implements Adapter {
     @Override
     public Executor activate(URI absoluteLocation, URI endpointUri, JsonNode deploymentSpec) {
 
+        Map<String, String> options = new HashMap<>();
+        options.put("js.experimental-foreign-object-prototype", "true");
         Context context =
                 Context.newBuilder("js")
-                        .allowHostAccess(HostAccess.ALL).allowPolyglotAccess(PolyglotAccess.newBuilder().build())
+                        .allowHostAccess(HostAccess.ALL)
+                        .allowIO(true)
+                        .allowPolyglotAccess(PolyglotAccess.newBuilder().build())
                         .allowExperimentalOptions(true)
-                        .option("js.experimental-foreign-object-prototype", "true")
+                        .options(options)
                         .allowHostClassLookup(className -> true)
                         .allowNativeAccess(true)
                         .build();
