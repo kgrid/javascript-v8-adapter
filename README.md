@@ -28,6 +28,8 @@ As an embedded adapter, this will automatically be enabled when the activator st
 An example KO can be found in our [example collection](https://github.com/kgrid-objects/example-collection/) here:
 [js/simple/1.0](https://github.com/kgrid-objects/example-collection/releases/latest/download/js-simple-v1.0.zip)
 
+There is also a KO that uses ECMAscript 5 modules: [js/simple/1.0](https://github.com/kgrid-objects/example-collection/releases/latest/download/js-modules-v1.0.zip)
+
 ## Guidance for Knowledge Object Developers
 This adapter is for activating Knowledge Objects written in javascript.
 
@@ -86,9 +88,25 @@ You can call other activated object endpoints in the activator from your javascr
 
 The context object also allows you to access environment variables using `context.getProperty(property.name)`.
 
-## Important Notes
-- Currently, multi-artifact KOs are not supported as the `import` statement is not supported in Graal VM. You can use a javascript compiler such as [babel](https://babeljs.io/) to build your code into a single file that is compatible with this adapter.
 
+## Using ECMAscript 5 modules
+This adapter supports using standard [ES5 modules](https://v8.dev/features/modules). However, note that every source file in the object must be an ES5 module.
+This means that your js source files must end in the `.mjs` extension. See the example js-modules object for a sample of how this works.
+Your entry function must be exported and all your source files must be listed in the deployment.yaml.
+
+deployment.yaml example:
+```yaml
+/welcome:
+  post:
+    artifact:
+      - src/index.mjs
+      - src/math.mjs
+    engine: javascript
+    function: welcome
+    entry: src/index.mjs
+```
+
+## Important Notes
 - The v8 engine cannot return native javascript arrays. You can work around this problem by using javascript objects instead.
   Or use the graal polyglot methods for creating a java array in javascript:
     ```javascript

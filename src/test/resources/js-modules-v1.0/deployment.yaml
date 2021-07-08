@@ -5,3 +5,4 @@
       - src/math.mjs
     engine: javascript
     function: welcome
+    entry: src/index.mjs

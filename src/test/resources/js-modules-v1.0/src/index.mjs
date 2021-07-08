@@ -1,4 +1,4 @@
-import {addTwo} from 'math.mjs';
+import {addTwo} from './math.mjs';
 
 function welcome(inputs) {
     var name = inputs.name;
