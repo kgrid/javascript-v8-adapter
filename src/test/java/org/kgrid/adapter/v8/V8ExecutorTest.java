@@ -47,7 +47,7 @@ public class V8ExecutorTest {
                     .allowHostClassLookup(className -> true)
                     .allowNativeAccess(true)
                     .build();
-    String baseFunctionCode = "import {welcome} from '/Users/Nate/KGrid/javascript-v8-adapter/src/test/resources/js-modules-v1.0/src/index.mjs';\n" +
+    String baseFunctionCode = "import {welcome} from 'src/test/resources/js-modules-v1.0/src/index.mjs';\n" +
             "welcome;";
     Map<String, Object> inputs = new HashMap<>();
     inputs.put("name", "ted");
