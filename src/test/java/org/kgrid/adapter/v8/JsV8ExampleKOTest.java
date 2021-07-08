@@ -63,7 +63,7 @@ public class JsV8ExampleKOTest {
         URI bmiKoPackageName = URI.create("v8-bmicalc-v1.0/");
         String bmiKoDeploymentSpecName = "deployment.yaml";
         String bmiKoEndpointName = "/bmicalc";
-        URI executiveKoPackageName = URI.create("v8-executive-1.0.0/");
+        URI executiveKoPackageName = URI.create("v8-executive-1.0/");
         String executiveKoDeploymentSpecName = "deployment.yaml";
         String executiveKoEndpointName = "/process";
 

@@ -12,7 +12,9 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JsV8Adapter implements Adapter {
 
@@ -38,11 +40,15 @@ public class JsV8Adapter implements Adapter {
     @Override
     public Executor activate(URI absoluteLocation, URI endpointUri, JsonNode deploymentSpec) {
 
+        Map<String, String> options = new HashMap<>();
+        options.put("js.experimental-foreign-object-prototype", "true");
         Context context =
                 Context.newBuilder("js")
-                        .allowHostAccess(HostAccess.ALL).allowPolyglotAccess(PolyglotAccess.newBuilder().build())
+                        .allowHostAccess(HostAccess.ALL)
+                        .allowIO(true)
+                        .allowPolyglotAccess(PolyglotAccess.newBuilder().build())
                         .allowExperimentalOptions(true)
-                        .option("js.experimental-foreign-object-prototype", "true")
+                        .options(options)
                         .allowHostClassLookup(className -> true)
                         .allowNativeAccess(true)
                         .build();
@@ -59,11 +65,19 @@ public class JsV8Adapter implements Adapter {
         }
         try {
             URI artifactLocation = absoluteLocation.resolve(artifact);
-            context.getBindings("js").putMember("context", activationContext);
-            InputStream src = activationContext.getBinary(artifactLocation);
             String functionName = deploymentSpec.get("function").asText();
-            context.eval("js", new String(src.readAllBytes()));
-            return new V8Executor(context.getBindings("js").getMember(functionName));
+            if (artifact.endsWith(".mjs")) {
+                String srcLocation = getSrcLocation(artifactLocation);
+                String baseFunctionCode = String.format("import {%s} from '%s';\n" +
+                        "%s;", functionName, srcLocation, functionName);
+                Value function = context.eval(Source.newBuilder("js", baseFunctionCode, artifact).build());
+                return new V8Executor(function);
+            } else {
+                context.getBindings("js").putMember("context", activationContext);
+                InputStream src = activationContext.getBinary(artifactLocation);
+                context.eval(Source.newBuilder("js", new String(src.readAllBytes()), artifactLocation.toString()).build());
+                return new V8Executor(context.getBindings("js").getMember(functionName));
+            }
         } catch (PolyglotException e) {
             String errorWithFilename = e.getMessage().replace("Unnamed", artifact);
             String errorMessage = errorWithFilename.substring(0, errorWithFilename.indexOf("\r\n"));
@@ -73,6 +87,18 @@ public class JsV8Adapter implements Adapter {
             log.error(e.getMessage());
             throw new AdapterException("Error loading source. " + e.getMessage(), e);
         }
+    }
+
+    private String getSrcLocation(URI artifactLocation) {
+        String shelfLocation = activationContext.getProperty("kgrid.shelf.cdostore.url");
+        if(shelfLocation == null) {
+            return artifactLocation.toString();
+        }
+        if (!shelfLocation.endsWith("/")) {
+            shelfLocation += "/";
+        }
+        URI importUri = URI.create(shelfLocation.substring(shelfLocation.indexOf(':') + 1)).resolve(artifactLocation);
+        return importUri.getHost() == null ? importUri.getPath() : importUri.getHost() + importUri.getPath();
     }
 
     @Override
